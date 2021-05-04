@@ -18,7 +18,7 @@ class Paquet():
     def battre(self):
         "Mélanger les cartes"
         shuffle(self.cartes)
-
+        
     def tirer(self):
         "Tirer la première carte de la pile"
         t = len(self.cartes)
