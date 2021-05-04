@@ -1,10 +1,14 @@
 class Player():
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.deck = []
         self.points = 0
         self.rank = 0
         self.contracts = ["Roi de coeur", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"]
     
+    def setName(self):
+        self.name = input(self.name + ", choisissez un nom")
+
     def take(self, card):
         self.deck.append(card)
 
