@@ -4,7 +4,7 @@ class Player():
         self.deck = []
         self.points = 0
         self.rank = 0
-        self.contracts = ["Roi de coeur", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"]
+        self.contracts = ["Roi barbu", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"]
     
     def setName(self):
         self.name = input(self.name + ", choisissez un nom")
@@ -13,7 +13,21 @@ class Player():
         self.deck.append(card)
 
     def throw(self, card):
-        self.deck.pop(card)
+        self.deck.remove(card)
+        return card
+
+    def chooseCardTrick(self):
+        print(self.name+"'s cards")
+        for i in range(len(self.deck)):
+            print(str(i) + " : " + self.deck[i].value.capitalize() + " de " + self.deck[i].couleur.capitalize())
+        while True:
+            choose = input("Choose the wanted card's index : ")
+            try:
+                choose = int(choose)
+                return self.throw(self.deck[choose])
+            except:
+                print("Invalid index provided")
+
     
     def addPoints(self, points):
         self.points += points
@@ -21,6 +35,14 @@ class Player():
     def removePoints(self, points):
         self.points -= points
     
-    def pick(self, name):
-        print("Vous avez le choix entre plusieurs contrats :")
-        print("\n".join(self.contracts))
+    def chooseContract(self):
+        print(self.name+"'s contracts")
+        for i in range(len(self.contracts)):
+            print(str(i) + " : " + self.contracts[i])
+        while True:
+            choose = input("Choose the wanted contract's index : ")
+            try:
+                choose = int(choose)
+                return self.contracts.pop(choose)
+            except:
+                print("Invalid index provided")
