@@ -2,7 +2,8 @@
 from Player import Player
 from Paquet import Paquet
 
-p = Player("Player 1")
+p = Player("test")
+
 
 contract = p.chooseContract()
 print(contract)

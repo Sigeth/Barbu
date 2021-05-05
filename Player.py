@@ -1,10 +1,15 @@
+from ContractLoader import ContractLoader
+
 class Player():
+
     def __init__(self, name):
         self.name = name
         self.deck = []
         self.points = 0
         self.rank = 0
-        self.contracts = ["Roi barbu", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"]
+        self.contractList = ContractLoader().loadContracts()
+        print(self.contractList) #debug
+        self.contracts = ["Roi barbu", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"] #old system : to be replaced
     
     def setName(self):
         self.name = input(self.name + ", choisissez un nom")

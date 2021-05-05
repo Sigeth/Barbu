@@ -18,4 +18,8 @@ class ContractLoader:
 
     def loadContract(self,filename):
         f = open(filename, "r")
+<<<<<<< Updated upstream
         return json.loads(f.read())
+=======
+        return json.loads(f.read())
+>>>>>>> Stashed changes
