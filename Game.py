@@ -2,7 +2,7 @@ from Player import Player
 
 from Paquet import Paquet
 
-from random import choice
+from random import choice, randint
 
 import pygame, sys
 
@@ -23,8 +23,6 @@ class Game():
 
         self.currentContract = None
 
-        self.draw()
-
         self.playerToPick = choice(self.players)
 
         self.trickNb = len(self.players[0].deck)
@@ -43,6 +41,12 @@ class Game():
 
         self.screen = pygame.display.set_mode(self.size)
 
+<<<<<<< Updated upstream
+=======
+        self.fontSrc = "src/KGRedHands.ttf"
+        self.fontSize = 96
+
+>>>>>>> Stashed changes
         self.waitingRoom()
     
 
@@ -51,41 +55,70 @@ class Game():
 
         self.paquet.battre()
 
+<<<<<<< Updated upstream
         font = pygame.font.Font("src/KGRedHands.ttf", 96)
         widthText, heightText = font.size("LAUNCH")
 
 
 
         while currentState == "WaitingRoom":
+=======
+        font = pygame.font.Font(self.fontSrc, self.fontSize)
+        widthText, heightText = font.size("LAUNCH")
+
+        delayms = 1000
+        currentDelay = 1000
+        cardsToDisplay = [None for i in range(6)]
+        while self.currentState == "WaitingRoom":
+>>>>>>> Stashed changes
             mouseX, mouseY = pygame.mouse.get_pos()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
             
+<<<<<<< Updated upstream
             screen.fill(bgColor)
 
             if currentDelay >= delayms:
                 for i in range(6):
                     card = choice(paquet.cartes)
+=======
+            self.screen.fill(self.bgColor)
+
+            if currentDelay >= delayms:
+                for i in range(6):
+                    card = choice(self.paquet.cartes)
+>>>>>>> Stashed changes
                     cardRect = card.aff.get_rect()
                     widthCard, heightCard = (0, 0)
                     if i == 0 or i == 3:
                         widthCard = 50
                     elif i == 1 or i == 4:
+<<<<<<< Updated upstream
                         widthCard = width//2 - 192//2
                     else:
                         widthCard = width - 50 - 192
+=======
+                        widthCard = self.width//2 - 192//2
+                    else:
+                        widthCard = self.width - 50 - 192
+>>>>>>> Stashed changes
                     
                     if i < 3:
                         heightCard = 0
                     else:
+<<<<<<< Updated upstream
                         heightCard = height - 290
+=======
+                        heightCard = self.height - 290
+>>>>>>> Stashed changes
                     
                     cardRect.move_ip(widthCard, heightCard)
                     cardsToDisplay[i] = (card.aff, cardRect)
                 currentDelay = 0
 
             for card, cardRect in cardsToDisplay:
+<<<<<<< Updated upstream
                 screen.blit(card, cardRect)
 
             colorText = (0, 0, 0)
@@ -97,6 +130,18 @@ class Game():
 
             launchTxt = font.render("LAUNCH", True, colorText)
             screen.blit(launchTxt, (width//2 - widthText//2, height//2 - heightText//2))
+=======
+                self.screen.blit(card, cardRect)
+
+            colorText = (0, 0, 0)
+            if (self.width//2 - widthText//2 < mouseX and mouseX < self.width//2 + widthText//2) and (self.height//2 - heightText//2 < mouseY and mouseY < self.height//2 + heightText//2):
+                colorText = (randint(0, 255), randint(0, 255), randint(0, 255))
+                if pygame.mouse.get_pressed(3)[0]:
+                    self.launch()
+
+            launchTxt = font.render("LAUNCH", True, colorText)
+            self.screen.blit(launchTxt, (self.width//2 - widthText//2, self.height//2 - heightText//2))
+>>>>>>> Stashed changes
             pygame.display.update()
             currentDelay += 1
 
