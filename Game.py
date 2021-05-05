@@ -29,7 +29,7 @@ class Game():
 
         self.roundNb = len(self.players[0].contracts)
 
-        self.currentState = "WaitingRoom"
+        self.currentState = "WaitingScreen"
 
         self.size = self.width, self.height = 1280, 720
 
@@ -58,7 +58,7 @@ class Game():
         delayms = 1000
         currentDelay = 1000
         cardsToDisplay = [None for i in range(6)]
-        while self.currentState == "WaitingRoom":
+        while self.currentState == "WaitingScreen":
             mouseX, mouseY = pygame.mouse.get_pos()
 
             for event in pygame.event.get():
