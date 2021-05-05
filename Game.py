@@ -62,6 +62,8 @@ class Game():
                 elif (card.value == "dame") and (self.currentContract == "Dames" or self.currentContract == "Salade"):
                     winner[1].addPoints(25)
                 if (card.couleur == "coeur") and (self.currentContract == "Coeurs" or self.currentContract == "Salade"):
+                    #TO-DO
+                    pass
         pass
         
     def checkVictory(self):
