@@ -1,12 +1,5 @@
-from random import shuffle 
-
-# la liste des images de cartes (sans les cavaliers)
-jeu_image = [chr(x) for x in (list(range(0x1f0a1, 0x1f0af))
-                         + list(range(0x1f0b1, 0x1f0bf))
-                         + list(range(0x1f0c1, 0x1f0cf))
-                         + list(range(0x1f0d1, 0x1f0df))) if x not in [0x1f0ac,0x1f0bc,0x1f0cc,0x1f0dc]]
-   
-"""Ouais ouais ouais"""
+from random import shuffle
+import pygame
 
 class Card():
     "Définition d'une carte"
@@ -16,13 +9,13 @@ class Card():
         self.couleur = coul
         self.num=n
         if self.couleur == 'pique':
-            self.aff = jeu_image[self.num]
-        if self.couleur == 'coeur':
-            self.aff = jeu_image[self.num + 13]
-        if self.couleur == 'carreau':
-            self.aff = jeu_image[self.num + 26]
+            self.aff = pygame.image.load("src/cards/" + str(n) + ".png")
         if self.couleur == 'trèfle':
-            self.aff = jeu_image[self.num + 39]
+            self.aff = pygame.image.load("src/cards/" + str(n+13) + ".png")
+        if self.couleur == 'carreau':
+            self.aff = pygame.image.load("src/cards/" + str(n+26) + ".png")
+        if self.couleur == 'coeur':
+            self.aff = pygame.image.load("src/cards/" + str(n+39) + ".png")
         if self.value == "as":
             self.point = 14
         if self.value == "valet":
