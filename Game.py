@@ -106,6 +106,8 @@ class Game():
     def launch(self):
 
         self.fontSize = 48
+
+        pygame.display.update()
         
         for p in self.players:
 
