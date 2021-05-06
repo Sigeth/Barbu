@@ -44,10 +44,10 @@ class Game():
         self.fontSrc = "src/KGRedHands.ttf"
         self.fontSize = 96
 
-        self.waitingRoom()
+        self.waitingScreen()
     
 
-    def waitingRoom(self):
+    def waitingScreen(self):
         launchButtonColor = 138, 43, 226
 
         self.paquet.battre()
@@ -94,12 +94,25 @@ class Game():
             if (self.width//2 - widthText//2 < mouseX and mouseX < self.width//2 + widthText//2) and (self.height//2 - heightText//2 < mouseY and mouseY < self.height//2 + heightText//2):
                 colorText = (randint(0, 255), randint(0, 255), randint(0, 255))
                 if pygame.mouse.get_pressed(3)[0]:
+                    self.currentState = "launch?"
                     self.launch()
 
             launchTxt = font.render("LAUNCH", True, colorText)
             self.screen.blit(launchTxt, (self.width//2 - widthText//2, self.height//2 - heightText//2))
             pygame.display.update()
             currentDelay += 1
+
+
+    def launch(self):
+
+        self.fontSize = 48
+        
+        for p in self.players:
+
+            p.setName(self.screen, pygame.font.Font(self.fontSrc, self.fontSize), self.width, self.height)
+
+        self.changeContract(self.playerToPick)
+        self.round()
 
 
     def draw(self):
@@ -121,15 +134,6 @@ class Game():
 
             p.deck = []
         
-
-    def launch(self):
-
-        for p in self.players:
-
-            p.setName()
-
-        self.changeContract(self.playerToPick)
-        self.round()
 
 
     def changeContract(self, p):
