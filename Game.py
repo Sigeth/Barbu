@@ -48,8 +48,6 @@ class Game():
     
 
     def waitingScreen(self):
-        launchButtonColor = 138, 43, 226
-
         self.paquet.battre()
 
         font = pygame.font.Font(self.fontSrc, self.fontSize)
@@ -105,13 +103,17 @@ class Game():
 
     def launch(self):
 
+        self.screen.fill(self.bgColor)
+        pygame.display.update()
+
         self.fontSize = 48
 
-        pygame.display.update()
+        font = pygame.font.Font(self.fontSrc, self.fontSize)
         
+        x = 20
         for p in self.players:
-
-            p.setName(self.screen, pygame.font.Font(self.fontSrc, self.fontSize), self.width, self.height)
+            name = p.setName(self.screen, font, self.width, self.height)
+            print(name)
 
         self.changeContract(self.playerToPick)
         self.round()
@@ -153,13 +155,11 @@ class Game():
 
             player = self.players[index + i - (4*((index+i)//4))]
 
-            card = player.chooseCardTrick()
+            card = player.chooseCardTrick(deckThrow)
 
             deckThrow.append((card,player))
 
-        self.calculatePoints(deckThrow,roundId)
-
-        return winner
+        return self.calculatePoints(deckThrow,roundId)
 
 
 
@@ -205,7 +205,8 @@ class Game():
                 if (card.couleur == "coeur") and (self.currentContract == "Coeurs" or self.currentContract == "Salade"):
 
                     winner[1].addPoints(10)
-                    
+        
+        return winner
         
 
     def checkVictory(self):
@@ -230,10 +231,16 @@ class Game():
         
     def round(self):
         roundId = 0
-
+        self.draw()
         firstPlayer=self.playerToPick
         while roundId > self.trickNb or self.checkVictory():
 
             roundId+=1
 
             firstPlayer = self.trick(firstPlayer, roundId)
+    
+    def jeu(self):
+        for i in range(0,len(self.contractList)*len(self.players)):
+            
+            self.chooseContract()
+            self.round()

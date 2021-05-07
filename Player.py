@@ -1,5 +1,5 @@
 from ContractLoader import ContractLoader
-import pygame
+import pygame, sys
 
 class Player():
 
@@ -9,31 +9,44 @@ class Player():
         self.points = 0
         self.rank = 0
         self.contractList = ContractLoader().loadContracts()
-        print(self.contractList) #debug
         self.contracts = ["Roi barbu", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"] #old system : to be replaced
     
     def setName(self, screen, font, width, height):
         current_string = []
-        chooseTxt = font.render(self.name + "'s name: " + "".join(current_string), True, (0,0,0))
-        widthText, heightText = font.size(self.name + "'s name: " + "".join(current_string))
-        screen.blit(chooseTxt, (width//2 - widthText//2, height//2 - heightText//2))
-        while True:
+        delay = 50
+        currentDelay = 50
+        done = False
+        while not done:
+        #Faut que ça marche comme un pc normal
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+
             screen.fill((255, 255, 255))
-            #print(pygame.key.get_pressed())
-            """if inkey == K_BACKSPACE:
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_BACKSPACE]:
                 current_string = current_string[0:-1]
-            elif inkey == K_RETURN:
-                break
-            elif inkey == K_MINUS:
+            elif keys[pygame.K_RETURN]:
+                done = True
+            elif keys[pygame.K_MINUS]:
                 current_string.append("_")
-            elif inkey <= 127:
-                current_string.append(chr(inkey))"""
+            try:
+                index = keys.index(True)
+                if index <= 29 and index >= 4 and currentDelay >= delay:
+                    current_string.append(chr(index+93))
+                    currentDelay = 0
+                        
+            except ValueError:
+                pass
             chooseTxt = font.render(self.name + "'s name: " + "".join(current_string), True, (0,0,0))
             widthText, heightText = font.size(self.name + "'s name: " + "".join(current_string))
             screen.blit(chooseTxt, (width//2 - widthText//2, height//2 - heightText//2))
             pygame.display.update()
-        self.name = string.join(current_string,"")
+            currentDelay += 1
+        
+        self.name = "".join(current_string)
         return self.name
+            
 
     def take(self, card):
         self.deck.append(card)
@@ -42,18 +55,42 @@ class Player():
         self.deck.remove(card)
         return card
 
-    def chooseCardTrick(self):
+    def chooseCardTrick(self, deckThrow):
         print(self.name+"'s cards")
         for i in range(len(self.deck)):
             print(str(i) + " : " + self.deck[i].value.capitalize() + " de " + self.deck[i].couleur.capitalize())
         while True:
-            choose = input("Choose the wanted card's index : ")
-            try:
-                choose = int(choose)
-                return self.throw(self.deck[choose])
-            except:
-                print("Invalid index provided")
-
+            if len(deckThrow)==0:
+                choose = input("Choose the wanted card's index : ")
+                colorTrick = self.deck[choose].couleur
+                try:
+                    choose = int(choose)
+                    return self.throw(self.deck[choose])
+                except:
+                    print("Invalid index provided")
+            else:
+                testColor=0
+                for i in range(len(self.deck)):
+                    if self.deck[i].couleur==colorTrick:
+                        testColor+=1
+                if testColor==0:
+                    choose = input("Choose the wanted card's index : ")
+                    while self.deck[choose].couleur!=colorTrick:
+                        print("NO")
+                        choose = input("Choose the wanted card's index : ")
+                    try:
+                        choose = int(choose)
+                        return self.throw(self.deck[choose])
+                    except:
+                        print("Invalid index provided")
+                else:
+                    choose = input("Choose the wanted card's index : ")
+                try:
+                    choose = int(choose)
+                    return self.throw(self.deck[choose])
+                except:
+                    print("Invalid index provided")
+                    
     
     def addPoints(self, points):
         self.points += points

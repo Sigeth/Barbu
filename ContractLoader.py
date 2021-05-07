@@ -4,7 +4,6 @@ import os
 class ContractLoader:
 
     def __init__(self):
-        print("ça marche ?")
         self.subdir = './contracts'
         self.contractDic = []
 
