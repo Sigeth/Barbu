@@ -3,7 +3,7 @@ import pygame, sys
 
 class Player():
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
         self.deck = []
         self.points = 0
@@ -11,7 +11,10 @@ class Player():
         self.contractList = ContractLoader().loadContracts()
         self.contracts = ["Roi barbu", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"] #old system : to be replaced
     
-    def setName(self, screen, font, width, height, players):
+    def setName(self, screen: pygame.Surface, font: pygame.Font, width: int, height: int, players: list) -> str:
+        """
+        
+        """
         current_string = []
         done = False
         while not done:
@@ -39,6 +42,7 @@ class Player():
                         current_string.append(" ")
 
             screen.fill((255, 255, 255))
+            
             chooseTxt = font.render(self.name + "'s name: " + "".join(current_string), True, (0,0,0))
             widthText, heightText = font.size(self.name + "'s name: " + "".join(current_string))
             screen.blit(chooseTxt, (width//2 - widthText//2, height//2 - heightText//2))
