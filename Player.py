@@ -65,7 +65,6 @@ class Player():
         while True:
             if len(deckThrow)==0:
                 choose = input("Choose the wanted card's index : ")
-                colorTrick = self.deck[choose].couleur
                 try:
                     choose = int(choose)
                     return self.throw(self.deck[choose])
@@ -73,26 +72,27 @@ class Player():
                     print("Invalid index provided")
             else:
                 testColor=0
+                colorTrick = deckThrow[0][0].couleur
                 for i in range(len(self.deck)):
                     if self.deck[i].couleur==colorTrick:
                         testColor+=1
-                if testColor==0:
-                    choose = input("Choose the wanted card's index : ")
-                    while self.deck[choose].couleur!=colorTrick:
-                        print("NYoucan't choose this color!")
+                if testColor!=0:
+                    while True:
                         choose = input("Choose the wanted card's index : ")
-                    try:
-                        choose = int(choose)
-                        return self.throw(self.deck[choose])
-                    except:
-                        print("Invalid index provided")
+                        try:
+                            choose = int(choose)
+                            assert self.deck[choose].couleur==colorTrick
+                            return self.throw(self.deck[choose])
+                        except:
+                            print("Invalid index provided")
                 else:
-                    choose = input("Choose the wanted card's index : ")
-                try:
-                    choose = int(choose)
-                    return self.throw(self.deck[choose])
-                except:
-                    print("Invalid index provided")
+                    while True:
+                        choose = input("Choose the wanted card's index : ")
+                        try:
+                            choose = int(choose)
+                            return self.throw(self.deck[choose])
+                        except:
+                            print("Invalid index provided")
                     
     
     def addPoints(self, points):
@@ -115,6 +115,11 @@ class Player():
     
     def showCards(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
         screen.fill(bgColor)
+
+        nameTxt = font.render(self.name + "'s turn", True, (0,0,0))
+        widthText, heightText = font.size(self.name + "'s turn")
+
+        screen.blit(nameTxt, (width//2 - widthText//2, 10))
 
         i = 0
         for card in self.deck:
