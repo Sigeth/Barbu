@@ -1,3 +1,4 @@
+from pygame.constants import RESIZABLE
 from Player import Player
 
 from Paquet import Paquet
@@ -25,7 +26,7 @@ class Game():
 
         self.playerToPick = choice(self.players)
 
-        self.trickNb = len(self.players[0].deck)
+        self.trickNb = None
 
         self.roundNb = len(self.players[0].contracts)
 
@@ -39,7 +40,7 @@ class Game():
         icon = pygame.image.load("src/icon.png")
         pygame.display.set_icon(icon)
 
-        self.screen = pygame.display.set_mode(self.size)
+        self.screen = pygame.display.set_mode(self.size, RESIZABLE)
 
         self.fontSrc = "src/KGRedHands.ttf"
         self.fontSize = 96
@@ -139,7 +140,11 @@ class Game():
 
         for p in self.players:
 
+            for card in p.deck:
+                self.paquet.remettre(card)
+            
             p.deck = []
+        
         
 
 
@@ -156,12 +161,14 @@ class Game():
 
         for i in range(len(self.players)):
 
-            player = self.players[index + i - (4*((index+i)//4))]
+            player = self.players[(index + i) % 4]
 
             card = player.chooseCardTrick(deckThrow)
 
             deckThrow.append((card,player))
 
+        for card in [tupl[0] for tupl in deckThrow]:
+            self.paquet.remettre(card)
         return self.calculatePoints(deckThrow,roundId)
 
 
@@ -196,7 +203,7 @@ class Game():
 
                 card = el[0]
 
-                if (card.value == "roi" and card.couleur == "coeur") and (self.currentContract == "Roi Barbu" or self.currentContract == "Salade"):
+                if (card.value == "roi" and card.couleur == "coeur") and (self.currentContract == "Roi barbu" or self.currentContract == "Salade"):
 
                     winner[1].addPoints(100)
 
@@ -213,23 +220,29 @@ class Game():
 
     def checkVictory(self):
 
+        victory = False
+
         for player in self.players:
 
             for card in player.deck:
 
-                if self.currentContract == "Roi Barbu" and (card.value == "roi" and card.couleur == "coeur"):
+                if self.currentContract == "Roi barbu" and (card.value == "roi" and card.couleur == "coeur"):
 
-                    return True
+                    victory = True
 
                 elif self.currentContract == "Dames" and card.value == "dame":
 
-                    return True
+                    victory = True
 
                 elif self.currentContract == "Coeurs" and card.couleur == "coeur":
 
-                    return True
+                    victory = True
+                
+                elif self.currentContract == "Pli" or self.currentContract == "Dernier Pli" or self.currentContract == "Salade":
+                    
+                    victory = True
 
-        return False
+        return victory
         
     def round(self):
 
@@ -237,28 +250,32 @@ class Game():
 
         firstPlayer=self.playerToPick
 
-        while roundId > self.trickNb or self.checkVictory():
+        while roundId <= self.trickNb and self.checkVictory():
 
             roundId+=1
 
             firstPlayer = self.trick(firstPlayer, roundId)
+
+            print(([p.points for p in self.players]))
     
     def gameState(self):
 
-        for i in range(0,len(self.players[0].contractList)*len(self.players)):
+        for i in range(len(self.players[0].contractList)//2*len(self.players)):
 
             self.draw()
 
-            font = pygame.font.Font(self.fontSrc, self.fontSize)
+            self.trickNb = len(self.players[0].deck)
+
+            """font = pygame.font.Font(self.fontSrc, self.fontSize)
 
             while True:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()
                 
                 self.screen = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
-                pygame.display.update()
+                pygame.display.update()"""
 
-            self.playerToPick.chooseContract()
+            self.currentContract = self.playerToPick.chooseContract()
 
             self.round()
 
@@ -282,4 +299,4 @@ class Game():
 
                 win=player
         
-        return win
+        print(win)
