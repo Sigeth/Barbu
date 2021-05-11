@@ -110,8 +110,6 @@ class Game():
         self.fontSize = 48
 
         font = pygame.font.Font(self.fontSrc, self.fontSize)
-        
-        x = 20
 
         for p in self.players:
 
@@ -119,9 +117,9 @@ class Game():
 
             print(name)
 
-        self.changeContract(self.playerToPick)
+        self.currentState = "GameState"
 
-        self.round()
+        self.gameState()
 
 
     def draw(self):
@@ -250,6 +248,15 @@ class Game():
         for i in range(0,len(self.players[0].contractList)*len(self.players)):
 
             self.draw()
+
+            font = pygame.font.Font(self.fontSrc, self.fontSize)
+
+            while True:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: sys.exit()
+                
+                self.screen = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
+                pygame.display.update()
 
             self.playerToPick.chooseContract()
 

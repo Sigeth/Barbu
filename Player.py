@@ -18,7 +18,6 @@ class Player():
         current_string = []
         done = False
         while not done:
-        #Faut que ça marche comme un pc normal
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
@@ -113,3 +112,16 @@ class Player():
                 return self.contracts.pop(choose)
             except:
                 print("Invalid index provided")
+    
+    def showCards(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
+        screen.fill(bgColor)
+
+        i = 0
+        for card in self.deck:
+            cardRect = card.aff.get_rect()
+            cardRect.move_ip(i, height - 285)
+
+            screen.blit(card.aff, cardRect)
+            i += 100
+
+        return screen
