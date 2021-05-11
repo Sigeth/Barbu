@@ -117,8 +117,6 @@ class Game():
 
             name = p.setName(self.screen, font, self.width, self.height, self.players)
 
-
-
             print(name)
 
         self.changeContract(self.playerToPick)
@@ -240,8 +238,6 @@ class Game():
 
         roundId = 0
 
-        self.draw()
-
         firstPlayer=self.playerToPick
 
         while roundId > self.trickNb or self.checkVictory():
@@ -253,6 +249,8 @@ class Game():
     def gameState(self):
 
         for i in range(0,len(self.players[0].contractList)*len(self.players)):
+
+            self.draw()
 
             self.playerToPick.chooseContract()
 
@@ -272,7 +270,7 @@ class Game():
 
         for player in self.players:
 
-            if player.points<i:
+            if player.points<i:          
 
                 i=player.points
 
