@@ -104,6 +104,7 @@ class Game():
     def launch(self):
 
         self.screen.fill(self.bgColor)
+
         pygame.display.update()
 
         self.fontSize = 48
@@ -111,11 +112,17 @@ class Game():
         font = pygame.font.Font(self.fontSrc, self.fontSize)
         
         x = 20
+
         for p in self.players:
-            name = p.setName(self.screen, font, self.width, self.height)
+
+            name = p.setName(self.screen, font, self.width, self.height, self.players)
+
+
+
             print(name)
 
         self.changeContract(self.playerToPick)
+
         self.round()
 
 
@@ -206,7 +213,7 @@ class Game():
 
                     winner[1].addPoints(10)
         
-        return winner
+        return winner[1]
         
 
     def checkVictory(self):
@@ -230,17 +237,45 @@ class Game():
         return False
         
     def round(self):
+
         roundId = 0
+
         self.draw()
+
         firstPlayer=self.playerToPick
+
         while roundId > self.trickNb or self.checkVictory():
 
             roundId+=1
 
             firstPlayer = self.trick(firstPlayer, roundId)
     
-    def jeu(self):
-        for i in range(0,len(self.contractList)*len(self.players)):
-            
-            self.chooseContract()
+    def gameState(self):
+
+        for i in range(0,len(self.players[0].contractList)*len(self.players)):
+
+            self.playerToPick.chooseContract()
+
             self.round()
+
+            if self.players[-1]==self.playerToPick:
+
+                self.playerToPick=self.players[0]
+
+            else:
+
+                self.playerToPick=self.players[self.players.index(self.playerToPick)+1]
+
+        i=self.players[0].points
+
+        win=self.players[0]
+
+        for player in self.players:
+
+            if player.points<i:
+
+                i=player.points
+
+                win=player
+        
+        return win
