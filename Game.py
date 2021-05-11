@@ -33,7 +33,7 @@ class Game():
 
         self.size = self.width, self.height = 1280, 720
 
-        self.bgColor = 255, 255, 255
+        self.bgColor = 0, 128, 0
 
         pygame.display.set_caption("Jeu du Barbu")
         icon = pygame.image.load("src/icon.png")
@@ -115,7 +115,7 @@ class Game():
 
         for p in self.players:
 
-            name = p.setName(self.screen, font, self.width, self.height, self.players)
+            name = p.setName(self.screen, self.bgColor, font, self.width, self.height, self.players)
 
             print(name)
 
@@ -165,7 +165,6 @@ class Game():
             deckThrow.append((card,player))
 
         return self.calculatePoints(deckThrow,roundId)
-
 
 
     def calculatePoints(self, deckThrow, roundId):

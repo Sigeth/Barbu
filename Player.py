@@ -11,9 +11,9 @@ class Player():
         self.contractList = ContractLoader().loadContracts()
         self.contracts = ["Roi barbu", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"] #old system : to be replaced
     
-    def setName(self, screen: pygame.Surface, font: pygame.Font, width: int, height: int, players: list) -> str:
+    def setName(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int, players: list) -> str:
         """
-        
+        Définit le nom du joueur via les inputs du clavier
         """
         current_string = []
         done = False
@@ -41,7 +41,7 @@ class Player():
                     elif event.key == pygame.K_SPACE:
                         current_string.append(" ")
 
-            screen.fill((255, 255, 255))
+            screen.fill(bgColor)
             
             chooseTxt = font.render(self.name + "'s name: " + "".join(current_string), True, (0,0,0))
             widthText, heightText = font.size(self.name + "'s name: " + "".join(current_string))
