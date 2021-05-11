@@ -11,10 +11,8 @@ class Player():
         self.contractList = ContractLoader().loadContracts()
         self.contracts = ["Roi barbu", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"] #old system : to be replaced
     
-    def setName(self, screen, font, width, height):
+    def setName(self, screen, font, width, height, players):
         current_string = []
-        delay = 50
-        currentDelay = 50
         done = False
         while not done:
         #Faut que ça marche comme un pc normal
@@ -22,27 +20,29 @@ class Player():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
 
+                if event.type == pygame.KEYDOWN:
+
+                    if (pygame.K_0 <= event.key and event.key <= pygame.K_9) or (pygame.K_a <= event.key and event.key <= pygame.K_z):
+                        current_string.append(pygame.key.name(event.key))
+                    
+                    elif event.key == pygame.K_BACKSPACE:
+                        current_string = current_string[0:-1]
+                    
+                    elif event.key == pygame.K_RETURN:
+                    
+                        if len(current_string) == 0 or "".join(current_string) in [p.name for p in players]:
+                            pass
+                        else:
+                            done = True
+                    
+                    elif event.key == pygame.K_SPACE:
+                        current_string.append(" ")
+
             screen.fill((255, 255, 255))
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_BACKSPACE]:
-                current_string = current_string[0:-1]
-            elif keys[pygame.K_RETURN]:
-                done = True
-            elif keys[pygame.K_MINUS]:
-                current_string.append("_")
-            try:
-                index = keys.index(True)
-                if index <= 29 and index >= 4 and currentDelay >= delay:
-                    current_string.append(chr(index+93))
-                    currentDelay = 0
-                        
-            except ValueError:
-                pass
             chooseTxt = font.render(self.name + "'s name: " + "".join(current_string), True, (0,0,0))
             widthText, heightText = font.size(self.name + "'s name: " + "".join(current_string))
             screen.blit(chooseTxt, (width//2 - widthText//2, height//2 - heightText//2))
             pygame.display.update()
-            currentDelay += 1
         
         self.name = "".join(current_string)
         return self.name
@@ -76,7 +76,7 @@ class Player():
                 if testColor==0:
                     choose = input("Choose the wanted card's index : ")
                     while self.deck[choose].couleur!=colorTrick:
-                        print("NO")
+                        print("NYoucan't choose this color!")
                         choose = input("Choose the wanted card's index : ")
                     try:
                         choose = int(choose)
