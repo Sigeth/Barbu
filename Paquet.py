@@ -28,3 +28,6 @@ class Paquet():
             return carte
         else:
             return None
+    
+    def remettre(self, card):
+        self.cartes.append(card)
