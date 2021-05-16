@@ -127,6 +127,6 @@ class Player():
             cardRect.move_ip(i, height - 285)
 
             screen.blit(card.aff, cardRect)
-            i += 100
+            i += width//len(self.deck)
 
         return screen

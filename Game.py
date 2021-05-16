@@ -266,14 +266,16 @@ class Game():
 
             self.trickNb = len(self.players[0].deck)
 
-            """font = pygame.font.Font(self.fontSrc, self.fontSize)
+            font = pygame.font.Font(self.fontSrc, self.fontSize)
 
             while True:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()
                 
+                mouseX, mouseY = pygame.mouse.get_pos()
+                
                 self.screen = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
-                pygame.display.update()"""
+                pygame.display.update()
 
             self.currentContract = self.playerToPick.chooseContract()
 
