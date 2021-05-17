@@ -168,7 +168,9 @@ class Game():
             deckThrow.append((card,player))
 
         for card in [tupl[0] for tupl in deckThrow]:
+
             self.paquet.remettre(card)
+            
         return self.calculatePoints(deckThrow,roundId)
 
 
@@ -189,34 +191,28 @@ class Game():
 
         winner=winnerCard
 
-        if self.currentContract == "Pli" or self.currentContract == "Salade":
+        winner[1].addPoints(10)
 
-            winner[1].addPoints(10)
+        for el in deckThrow:
 
-        if self.currentContract == "Dernier pli" or self.currentContract == "Salade" and roundId==13:
+            card = el[0]
 
-            winner[1].addPoints(100)
+            if (card.value == "roi" and card.couleur == "coeur") and (self.currentContract == "Roi barbu" or self.currentContract == "Salade"):
 
-        if self.currentContract != "Pli" or self.currentContract != "Dernier pli":
+                winner[1].addPoints(100)
 
-            for el in deckThrow:
+            elif (card.value == "dame") and (self.currentContract == "Dames" or self.currentContract == "Salade"):
 
-                card = el[0]
+                winner[1].addPoints(25)
 
-                if (card.value == "roi" and card.couleur == "coeur") and (self.currentContract == "Roi barbu" or self.currentContract == "Salade"):
+            if (card.couleur == "coeur") and (self.currentContract == "Coeurs" or self.currentContract == "Salade"):
 
-                    winner[1].addPoints(100)
-
-                elif (card.value == "dame") and (self.currentContract == "Dames" or self.currentContract == "Salade"):
-
-                    winner[1].addPoints(25)
-
-                if (card.couleur == "coeur") and (self.currentContract == "Coeurs" or self.currentContract == "Salade"):
-
-                    winner[1].addPoints(10)
+                winner[1].addPoints(10)
 
         points = sorted([p.points for p in self.players])
+
         for p in self.players:
+
             p.rank=points.index(p.points)+1
 
         return winner[1]
@@ -241,8 +237,8 @@ class Game():
                 elif self.currentContract == "Coeurs" and card.couleur == "coeur":
 
                     victory = True
-                
-                elif self.currentContract == "Pli" or self.currentContract == "Dernier Pli" or self.currentContract == "Salade":
+                    
+                elif self.currentContract == "Salade" and ((card.value == "dame") or (card.couleur == "coeur")):
                     
                     victory = True
 
@@ -296,14 +292,20 @@ class Game():
 
         i=self.players[0].points
 
-        win=self.players[0]
+        win=[]
 
         for player in self.players:
 
-            if player.points<i:          
+            if player.points<i:
 
                 i=player.points
 
-                win=player
-        
-        print(win)
+                win=[player]
+
+            elif player.points==i:
+
+                win.append(player)
+
+        for p in win:
+
+            print(p.name)
