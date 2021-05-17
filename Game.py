@@ -214,7 +214,11 @@ class Game():
                 if (card.couleur == "coeur") and (self.currentContract == "Coeurs" or self.currentContract == "Salade"):
 
                     winner[1].addPoints(10)
-        
+
+        points = sorted([p.points for p in self.players])
+        for p in self.players:
+            p.rank=points.index(p.points)+1
+
         return winner[1]
         
 
@@ -257,6 +261,7 @@ class Game():
             firstPlayer = self.trick(firstPlayer, roundId)
 
             print(([p.points for p in self.players]))
+            print(([p.rank for p in self.players]))
     
     def gameState(self):
 
@@ -268,14 +273,14 @@ class Game():
 
             font = pygame.font.Font(self.fontSrc, self.fontSize)
 
-            while True:
+            """while True:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()
                 
                 mouseX, mouseY = pygame.mouse.get_pos()
                 
                 self.screen = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
-                pygame.display.update()
+                pygame.display.update()"""
 
             self.currentContract = self.playerToPick.chooseContract()
 
