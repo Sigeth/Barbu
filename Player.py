@@ -9,7 +9,7 @@ class Player():
         self.points = 0
         self.rank = 0
         self.contractList = ContractLoader().loadContracts()
-        self.contracts = ["Roi barbu", "Dames", "Coeurs", "Pli", "Dernier pli", "Salade"] #old system : to be replaced
+        self.contracts = ["Roi barbu", "Dames", "Coeurs", "Salade"] #old system : to be replaced
     
     def setName(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int, players: list) -> str:
         """
