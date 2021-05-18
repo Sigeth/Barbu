@@ -1,5 +1,6 @@
 from ContractLoader import ContractLoader
 import pygame, sys
+from Card import Card
 
 class Player():
 
@@ -9,7 +10,6 @@ class Player():
         self.points = 0
         self.rank = 0
         self.contractList = ContractLoader().loadContracts()
-        self.contracts = ["Roi barbu", "Dames", "Coeurs", "Salade"] #old system : to be replaced
     
     def setName(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int, players: list) -> str:
         """
@@ -51,14 +51,14 @@ class Player():
         return self.name
             
 
-    def take(self, card):
+    def take(self, card: Card):
         self.deck.append(card)
 
-    def throw(self, card):
+    def throw(self, card: Card) -> Card:
         self.deck.remove(card)
         return card
 
-    def chooseCardTrick(self, deckThrow):
+    def chooseCardTrick(self, deckThrow: tuple) -> Card:
         print(self.name+"'s cards")
         for i in range(len(self.deck)):
             print(str(i) + " : " + self.deck[i].value.capitalize() + " de " + self.deck[i].couleur.capitalize())
@@ -95,23 +95,31 @@ class Player():
                             print("Invalid index provided")
                     
     
-    def addPoints(self, points):
+    def addPoints(self, points: int):
         self.points += points
     
-    def removePoints(self, points):
+    def removePoints(self, points: int):
         self.points -= points
     
     def chooseContract(self):
         print(self.name+"'s contracts")
-        for i in range(len(self.contracts)):
-            print(str(i) + " : " + self.contracts[i])
+        for i in range(len(self.contractList)):
+            print(str(i) + " : " + self.contractList[i]["name"])
         while True:
             choose = input("Choose the wanted contract's index : ")
             try:
                 choose = int(choose)
-                return self.contracts.pop(choose)
+                return self.contractList.pop(choose)
             except:
                 print("Invalid index provided")
+            
+        
+    def waitingScreen(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
+        screen.fill(bgColor)
+
+        waitingTxt = font.render(self.name + "'s turn, press Enter to play", True, (0,0,0))
+        widthTxt, heightTxt = font.size(self.name + "'s turn, press Enter to play")
+        
     
     def showCards(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
         screen.fill(bgColor)
@@ -130,3 +138,18 @@ class Player():
             i += width//len(self.deck)
 
         return screen
+    
+    def showContracts(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
+
+        for i in range(len(self.contractList)):
+            el = self.contractList[i]
+
+            card = Card(el["cardToDisplay"]["value"], el["cardToDisplay"]["couleur"], el["cardToDisplay"]["n"])
+
+            cardRect = card.aff.get_rect()
+            cardRect.move_ip(i*(width//len(self.contractList)) + 192//3, height//2 - 280//2)
+
+            screen.blit(card.aff, cardRect)
+        
+        return screen
+
