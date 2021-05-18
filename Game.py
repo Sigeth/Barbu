@@ -45,10 +45,10 @@ class Game():
         self.fontSrc = "src/KGRedHands.ttf"
         self.fontSize = 96
 
-        self.waitingScreen()
+        self.launchScreen()
     
 
-    def waitingScreen(self):
+    def launchScreen(self):
         """
         Affiche l'écran d'acceuil et le bouton LAUNCH au lancement.
         """
@@ -103,6 +103,22 @@ class Game():
             self.screen.blit(launchTxt, (self.width//2 - widthText//2, self.height//2 - heightText//2))
             pygame.display.update()
             currentDelay += 1
+        
+    
+    def draw(self):
+        """
+        Distribue les cartes.
+        """
+
+        self.clearDecks()
+
+        self.paquet.battre()
+
+        for i in range(self.nbCards//self.nbPlayers):
+
+            for p in self.players:
+
+                p.take(self.paquet.tirer())
 
 
     def launch(self):
@@ -126,22 +142,69 @@ class Game():
         self.currentState = "GameState"
 
         self.gameState()
+    
+    def playerWaitingScreen(self, p, font):
+        ready = False
 
+        while not ready:
+            self.screen = p.waitingScreen(self.screen, self.bgColor, font, self.width, self.height)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
 
-    def draw(self):
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        ready = True
+            
+            pygame.display.update()
+
+    def EndScreen(self, p,font):
         """
-        Distribue les cartes.
+        Affiche l'écran d'acceuil et le bouton LAUNCH au lancement.
         """
-
-        self.clearDecks()
-
         self.paquet.battre()
 
-        for i in range(self.nbCards//self.nbPlayers):
+        font = pygame.font.Font(self.fontSrc, self.fontSize)
+        widthText, heightText = font.size("LAUNCH")
 
-            for p in self.players:
+        
+        cardsToDisplay = [None for i in range(6)]
+        while self.currentState == "EndScreen":
+            mouseX, mouseY = pygame.mouse.get_pos()
 
-                p.take(self.paquet.tirer())
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+            
+            self.screen.fill(self.bgColor)
+
+            if currentDelay >= delayms:
+                for i in range(6):
+                    card = choice(self.paquet.cartes)
+                    cardRect = card.aff.get_rect()
+                    widthCard, heightCard = (0, 0)
+                    if i == 0 or i == 3:
+                        widthCard = 50
+                    elif i == 1 or i == 4:
+                        widthCard = self.width//2 - 192//2
+                    else:
+                        widthCard = self.width - 50 - 192
+                    
+                    if i < 3:
+                        heightCard = 0
+                    else:
+                        heightCard = self.height - 290
+                    
+                    cardRect.move_ip(widthCard, heightCard)
+                    cardsToDisplay[i] = (card.aff, cardRect)
+                currentDelay = 0
+
+            for card, cardRect in cardsToDisplay:
+                self.screen.blit(card, cardRect)
+
+           
+
+            launchTxt = font.render("LAUNCH", True, colorText)
+            self.screen.blit(launchTxt, (self.width//2 - widthText//2, self.height//2 - heightText//2))
+            pygame.display.update()
             
 
     def clearDecks(self):
@@ -278,6 +341,8 @@ class Game():
             self.trickNb = len(self.players[0].deck)
 
             font = pygame.font.Font(self.fontSrc, self.fontSize)
+
+            self.playerWaitingScreen(self.playerToPick, font)
 
             while True:
                 for event in pygame.event.get():
