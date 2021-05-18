@@ -1,0 +1,10 @@
+{
+    "name": "Roi barbu",
+
+    "cardToDisplay": {
+        "value": "roi",
+        "couleur": "coeur",
+        "n": 12
+    }
+
+}

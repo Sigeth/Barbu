@@ -1,0 +1,10 @@
+{
+    "name": "Coeurs",
+
+    "cardToDisplay": {
+        "value": "as",
+        "couleur": "coeur",
+        "n": 0
+    }
+
+}

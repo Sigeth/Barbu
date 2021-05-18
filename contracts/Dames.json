@@ -1,0 +1,10 @@
+{
+    "name": "Dames",
+
+    "cardToDisplay": {
+        "value": "dame",
+        "couleur": "coeur",
+        "n": 11
+    }
+
+}
