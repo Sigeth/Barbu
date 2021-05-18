@@ -174,7 +174,8 @@ class Game():
         #widthText, heightText = font.size("LAUNCH")
         winnertext = "Les gagnants sont : " + "\n".join([p.name for p in self.findWinners()])
         textsurface = winnerFont.render(winnertext, False, (0, 0, 0))
-        pl
+        sorted_players = self.players.sort(key=self.get_rank_key)
+        ranking_text = "Voici le classement : " + "\n".join([p.name for p in sorted_players])
         
         
         
@@ -188,6 +189,7 @@ class Game():
             self.screen.fill(self.bgColor)
             self.screen.blit(image, rectangle)
             self.screen.blit(textsurface,(0,0))
+            
             pygame.display.update() 
 
             
@@ -399,3 +401,6 @@ class Game():
                 win.append(player)
 
         return win
+
+    def get_rank_key(p):
+        return p['rank']
