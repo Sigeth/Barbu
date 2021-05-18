@@ -120,8 +120,13 @@ class Player():
     def waitingScreen(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
         screen.fill(bgColor)
 
-        waitingTxt = font.render(self.name + "'s turn, press Enter to play", True, (0,0,0))
-        widthTxt, heightTxt = font.size(self.name + "'s turn, press Enter to play")
+        waitingTxt = font.render(self.name + ", press Enter to play", True, (0,0,0))
+        widthTxt, heightTxt = font.size(self.name + ", press Enter to play")
+
+        screen.blit(waitingTxt, (width//2 - widthTxt//2, height//2 - heightTxt//2))
+
+        return screen
+
         
     
     def showCards(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
