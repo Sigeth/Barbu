@@ -28,7 +28,7 @@ class Game():
 
         self.trickNb = None
 
-        self.roundNb = len(self.players[0].contracts)
+        self.roundNb = len(self.players[0].contractList)
 
         self.currentState = "WaitingScreen"
 
@@ -49,6 +49,9 @@ class Game():
     
 
     def waitingScreen(self):
+        """
+        Affiche l'écran d'acceuil et le bouton LAUNCH au lancement.
+        """
         self.paquet.battre()
 
         font = pygame.font.Font(self.fontSrc, self.fontSize)
@@ -103,7 +106,9 @@ class Game():
 
 
     def launch(self):
-
+        """
+        Affiche le choix des noms.
+        """
         self.screen.fill(self.bgColor)
 
         pygame.display.update()
@@ -124,6 +129,9 @@ class Game():
 
 
     def draw(self):
+        """
+        Distribue les cartes.
+        """
 
         self.clearDecks()
 
@@ -137,24 +145,20 @@ class Game():
             
 
     def clearDecks(self):
-
+        """
+        Vide les decks.
+        """
         for p in self.players:
 
             for card in p.deck:
                 self.paquet.remettre(card)
             
             p.deck = []
-        
-        
 
-
-    def changeContract(self, p):
-
-        self.currentContract = p.chooseContract()
-
-
-    def trick(self, firstPlayer,roundId):
-
+    def trick(self, firstPlayer: Player, roundId: int) -> Player:
+        """
+        Effectue un tour de jeu.
+        """
         deckThrow = []
 
         index = self.players.index(firstPlayer)
@@ -174,9 +178,9 @@ class Game():
         return self.calculatePoints(deckThrow,roundId)
 
 
-    def calculatePoints(self, deckThrow, roundId):
+    def calculatePoints(self, deckThrow: tuple, roundId: int) -> Player:
         """
-        @param deckThrow: tuple that contains tuples where first element is the card and the second is the player linked (card, linkedPlayer)
+        Définie le joueur qui gagne le trick et lui donne ces points.
         """
 
         trickColor= deckThrow[0][0].couleur
@@ -197,15 +201,15 @@ class Game():
 
             card = el[0]
 
-            if (card.value == "roi" and card.couleur == "coeur") and (self.currentContract == "Roi barbu" or self.currentContract == "Salade"):
+            if (card.value == "roi" and card.couleur == "coeur") and (self.currentContract["name"] == "Roi barbu" or self.currentContract["name"] == "Salade"):
 
                 winner[1].addPoints(100)
 
-            elif (card.value == "dame") and (self.currentContract == "Dames" or self.currentContract == "Salade"):
+            elif (card.value == "dame") and (self.currentContract["name"] == "Dames" or self.currentContract["name"] == "Salade"):
 
                 winner[1].addPoints(25)
 
-            if (card.couleur == "coeur") and (self.currentContract == "Coeurs" or self.currentContract == "Salade"):
+            if (card.couleur == "coeur") and (self.currentContract["name"] == "Coeurs" or self.currentContract["name"] == "Salade"):
 
                 winner[1].addPoints(10)
 
@@ -218,34 +222,38 @@ class Game():
         return winner[1]
         
 
-    def checkVictory(self):
-
+    def checkVictory(self) -> bool:
+        """
+        Test si le contrat actuel est terminé ou non.
+        """
         victory = False
 
         for player in self.players:
 
             for card in player.deck:
 
-                if self.currentContract == "Roi barbu" and (card.value == "roi" and card.couleur == "coeur"):
+                if self.currentContract["name"] == "Roi barbu" and (card.value == "roi" and card.couleur == "coeur"):
 
                     victory = True
 
-                elif self.currentContract == "Dames" and card.value == "dame":
+                elif self.currentContract["name"] == "Dames" and card.value == "dame":
 
                     victory = True
 
-                elif self.currentContract == "Coeurs" and card.couleur == "coeur":
+                elif self.currentContract["name"] == "Coeurs" and card.couleur == "coeur":
 
                     victory = True
                     
-                elif self.currentContract == "Salade" and ((card.value == "dame") or (card.couleur == "coeur")):
+                elif self.currentContract["name"] == "Salade" and ((card.value == "dame") or (card.couleur == "coeur")):
                     
                     victory = True
 
         return victory
         
     def round(self):
-
+        """
+        Lance les tricks et les test.
+        """
         roundId = 0
 
         firstPlayer=self.playerToPick
@@ -260,7 +268,9 @@ class Game():
             print(([p.rank for p in self.players]))
     
     def gameState(self):
-
+        """
+        Lance les rounds, affiche les contrats et calcule le vainqueur.
+        """
         for i in range(len(self.players[0].contractList)//2*len(self.players)):
 
             self.draw()
@@ -269,14 +279,21 @@ class Game():
 
             font = pygame.font.Font(self.fontSrc, self.fontSize)
 
-            """while True:
+            while True:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()
                 
                 mouseX, mouseY = pygame.mouse.get_pos()
                 
                 self.screen = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
-                pygame.display.update()"""
+
+                transparentRect = pygame.Surface(self.size, pygame.SRCALPHA)
+                transparentRect.fill((0,0,0,176))
+                self.screen.blit(transparentRect, (0,0))
+
+                self.screen = self.playerToPick.showContracts(self.screen, self.bgColor, font, self.width, self.height)
+
+                pygame.display.update()
 
             self.currentContract = self.playerToPick.chooseContract()
 

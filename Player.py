@@ -52,6 +52,9 @@ class Player():
             
 
     def take(self, card: Card):
+        """
+        
+        """
         self.deck.append(card)
 
     def throw(self, card: Card) -> Card:
