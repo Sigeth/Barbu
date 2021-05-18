@@ -104,17 +104,8 @@ class Player():
     def removePoints(self, points: int):
         self.points -= points
     
-    def chooseContract(self):
-        print(self.name+"'s contracts")
-        for i in range(len(self.contractList)):
-            print(str(i) + " : " + self.contractList[i]["name"])
-        while True:
-            choose = input("Choose the wanted contract's index : ")
-            try:
-                choose = int(choose)
-                return self.contractList.pop(choose)
-            except:
-                print("Invalid index provided")
+    def chooseContract(self, i: int) -> dict:
+        return self.contractList.pop(i)
             
         
     def waitingScreen(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
@@ -129,7 +120,7 @@ class Player():
 
         
     
-    def showCards(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
+    def showCards(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> tuple:
         screen.fill(bgColor)
 
         nameTxt = font.render(self.name + "'s turn", True, (0,0,0))
@@ -137,27 +128,37 @@ class Player():
 
         screen.blit(nameTxt, (width//2 - widthText//2, 10))
 
+        cardRects = []
+
         i = 0
         for card in self.deck:
             cardRect = card.aff.get_rect()
             cardRect.move_ip(i, height - 285)
 
+            cardRects.append(cardRect)
+
             screen.blit(card.aff, cardRect)
             i += width//len(self.deck)
 
-        return screen
+        return screen, cardRects
     
-    def showContracts(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> pygame.Surface:
+    def showContracts(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> tuple:
+
+        cardRects = []
 
         for i in range(len(self.contractList)):
             el = self.contractList[i]
 
             card = Card(el["cardToDisplay"]["value"], el["cardToDisplay"]["couleur"], el["cardToDisplay"]["n"])
 
+
+
             cardRect = card.aff.get_rect()
             cardRect.move_ip(i*(width//len(self.contractList)) + 192//3, height//2 - 280//2)
 
+            cardRects.append(cardRect)
+
             screen.blit(card.aff, cardRect)
         
-        return screen
+        return screen, cardRects
 
