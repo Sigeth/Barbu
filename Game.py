@@ -141,6 +141,8 @@ class Game():
 
         self.currentState = "GameState"
 
+        #self.endScreen()
+
         self.gameState()
     
     def playerWaitingScreen(self, p, font):
@@ -157,55 +159,39 @@ class Game():
             
             pygame.display.update()
 
-    def EndScreen(self, p,font):
+    def endScreen(self):
         """
-        Affiche l'écran d'acceuil et le bouton LAUNCH au lancement.
+        Affiche les gagnants de la partie ainsi qu'un classement des joueurs (et un trophée)
         """
-        self.paquet.battre()
 
-        font = pygame.font.Font(self.fontSrc, self.fontSize)
-        widthText, heightText = font.size("LAUNCH")
-
+        self.currentState = "endScreen"
+        image = pygame.image.load('src/images/trophy.png')
+        rectangle = image.get_rect()
+        rectangle.center = (100,100)
+        rectangle.inflate_ip(-50,-50)
+        winnerFont = pygame.font.Font(self.fontSrc, self.fontSize)
+        font = pygame.font.Font(self.fontSrc, self.fontSize//2)
+        #widthText, heightText = font.size("LAUNCH")
+        winnertext = "Les gagnants sont : " + "\n".join([p.name for p in self.findWinners()])
+        textsurface = winnerFont.render(winnertext, False, (0, 0, 0))
+        pl
+        
+        
         
         cardsToDisplay = [None for i in range(6)]
-        while self.currentState == "EndScreen":
+        while self.currentState == "endScreen":
+            #rectangle.show()
             mouseX, mouseY = pygame.mouse.get_pos()
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
             
             self.screen.fill(self.bgColor)
+            self.screen.blit(image, rectangle)
+            self.screen.blit(textsurface,(0,0))
+            pygame.display.update() 
 
-            if currentDelay >= delayms:
-                for i in range(6):
-                    card = choice(self.paquet.cartes)
-                    cardRect = card.aff.get_rect()
-                    widthCard, heightCard = (0, 0)
-                    if i == 0 or i == 3:
-                        widthCard = 50
-                    elif i == 1 or i == 4:
-                        widthCard = self.width//2 - 192//2
-                    else:
-                        widthCard = self.width - 50 - 192
-                    
-                    if i < 3:
-                        heightCard = 0
-                    else:
-                        heightCard = self.height - 290
-                    
-                    cardRect.move_ip(widthCard, heightCard)
-                    cardsToDisplay[i] = (card.aff, cardRect)
-                currentDelay = 0
-
-            for card, cardRect in cardsToDisplay:
-                self.screen.blit(card, cardRect)
-
-           
-
-            launchTxt = font.render("LAUNCH", True, colorText)
-            self.screen.blit(launchTxt, (self.width//2 - widthText//2, self.height//2 - heightText//2))
-            pygame.display.update()
             
+
 
     def clearDecks(self):
         """
@@ -344,23 +330,43 @@ class Game():
 
             self.playerWaitingScreen(self.playerToPick, font)
 
-            while True:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT: sys.exit()
-                
+            chosing = True
+
+            while chosing:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 
-                self.screen = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
+                self.screen, cards = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
 
                 transparentRect = pygame.Surface(self.size, pygame.SRCALPHA)
                 transparentRect.fill((0,0,0,176))
                 self.screen.blit(transparentRect, (0,0))
 
-                self.screen = self.playerToPick.showContracts(self.screen, self.bgColor, font, self.width, self.height)
+                self.screen, contracts = self.playerToPick.showContracts(self.screen, self.bgColor, font, self.width, self.height)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: sys.exit()
+
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if mouseY >= self.height//2 - 280//2 and mouseY <= self.height//2 + 280//2:
+                            i = (mouseX - 192//2) // (self.width//len(self.playerToPick.contractList)) 
+                            if contracts[i].collidepoint(mouseX, mouseY):
+                                self.currentContract = self.playerToPick.chooseContract(i)
+                                print(self.currentContract["name"])
+                                chosing = False
+                
+                pygame.display.update()
+
+            chosing = True
+            while chosing:
+                mouseX, mouseY = pygame.mouse.get_pos()
+                
+                self.screen, cards = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: sys.exit()
 
                 pygame.display.update()
 
-            self.currentContract = self.playerToPick.chooseContract()
 
             self.round()
 
@@ -371,6 +377,10 @@ class Game():
             else:
 
                 self.playerToPick=self.players[self.players.index(self.playerToPick)+1]
+
+        self.endScreen()
+        
+    def findWinners(self):
 
         i=self.players[0].points
 
@@ -388,6 +398,4 @@ class Game():
 
                 win.append(player)
 
-        for p in win:
-
-            print(p.name)
+        return win
