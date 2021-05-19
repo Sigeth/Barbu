@@ -216,8 +216,6 @@ class Game():
 
         for j in range(len(self.players)):
 
-            print("oué yo")
-
             player = self.players[(index + j) % 4]
 
             self.playerWaitingScreen(player, font)
@@ -227,6 +225,15 @@ class Game():
                 mouseX, mouseY = pygame.mouse.get_pos()
                 
                 self.screen, cards = player.showCards(self.screen, self.bgColor, font, self.width, self.height)
+
+                if len(deckThrow) != 0:
+                    for i in range(len(deckThrow)):
+                        card = deckThrow[i][0]
+
+                        cardRect = card.aff.get_rect()
+                        cardRect.move_ip(i*(self.width//len(deckThrow)) + 192//3, self.height//2 - 280//2)
+
+                        self.screen.blit(card.aff, cardRect)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()
@@ -244,8 +251,6 @@ class Game():
                                     print((card.value, card.couleur))
 
                 pygame.display.update()
-            
-            print("no u")
 
         for card in [tupl[0] for tupl in deckThrow]:
 
