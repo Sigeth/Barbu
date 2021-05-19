@@ -61,41 +61,24 @@ class Player():
         self.deck.remove(card)
         return card
 
-    def chooseCardTrick(self, deckThrow: tuple) -> Card:
-        print(self.name+"'s cards")
-        for i in range(len(self.deck)):
-            print(str(i) + " : " + self.deck[i].value.capitalize() + " de " + self.deck[i].couleur.capitalize())
-        while True:
-            if len(deckThrow)==0:
-                choose = input("Choose the wanted card's index : ")
-                try:
-                    choose = int(choose)
-                    return self.throw(self.deck[choose])
-                except:
-                    print("Invalid index provided")
+    def chooseCardTrick(self, deckThrow: tuple, i: int) -> Card:
+        if len(deckThrow)==0:
+            return self.throw(self.deck[i])
+        else:
+            testColor=0
+            colorTrick = deckThrow[0][0].couleur
+            for j in range(len(self.deck)):
+                if self.deck[j].couleur==colorTrick:
+                    testColor+=1
+            if testColor!=0:
+                while True:
+                    try:
+                        assert self.deck[i].couleur==colorTrick
+                        return self.throw(self.deck[i])
+                    except:
+                        pass
             else:
-                testColor=0
-                colorTrick = deckThrow[0][0].couleur
-                for i in range(len(self.deck)):
-                    if self.deck[i].couleur==colorTrick:
-                        testColor+=1
-                if testColor!=0:
-                    while True:
-                        choose = input("Choose the wanted card's index : ")
-                        try:
-                            choose = int(choose)
-                            assert self.deck[choose].couleur==colorTrick
-                            return self.throw(self.deck[choose])
-                        except:
-                            print("Invalid index provided")
-                else:
-                    while True:
-                        choose = input("Choose the wanted card's index : ")
-                        try:
-                            choose = int(choose)
-                            return self.throw(self.deck[choose])
-                        except:
-                            print("Invalid index provided")
+                return self.throw(self.deck[i])
                     
     
     def addPoints(self, points: int):

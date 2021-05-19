@@ -178,8 +178,6 @@ class Game():
         ranking_text = "Voici le classement : " + "\n".join([p.name for p in sorted_players])
         
         
-        
-        cardsToDisplay = [None for i in range(6)]
         while self.currentState == "endScreen":
             #rectangle.show()
             mouseX, mouseY = pygame.mouse.get_pos()
@@ -214,13 +212,32 @@ class Game():
 
         index = self.players.index(firstPlayer)
 
-        for i in range(len(self.players)):
+        font = pygame.font.Font(self.fontSrc, self.fontSize)
 
-            player = self.players[(index + i) % 4]
+        for j in range(len(self.players)):
 
-            card = player.chooseCardTrick(deckThrow)
+            player = self.players[(index + j) % 4]
 
-            deckThrow.append((card,player))
+            chosing = True
+            while chosing:
+                mouseX, mouseY = pygame.mouse.get_pos()
+                
+                self.screen, cards = firstPlayer.showCards(self.screen, self.bgColor, font, self.width, self.height)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: sys.exit()
+                
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if mouseY >= self.height - 285:
+                            i = mouseX // (self.width//len(firstPlayer.deck)) 
+                            if cards[i].collidepoint(mouseX, mouseY):
+                                card = player.chooseCardTrick(deckThrow, i)
+                                deckThrow.append((card, player))
+                                chosing = False
+                                print((card.value, card.couleur))
+                                break
+
+                pygame.display.update()
 
         for card in [tupl[0] for tupl in deckThrow]:
 
@@ -358,18 +375,7 @@ class Game():
                 
                 pygame.display.update()
 
-            chosing = True
-            while chosing:
-                mouseX, mouseY = pygame.mouse.get_pos()
-                
-                self.screen, cards = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
-
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT: sys.exit()
-
-                pygame.display.update()
-
-
+            
             self.round()
 
             if self.players[-1]==self.playerToPick:
