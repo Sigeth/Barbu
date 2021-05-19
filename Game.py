@@ -240,15 +240,20 @@ class Game():
                 
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if mouseY >= self.height - 285:
-                            i = mouseX // (self.width//len(firstPlayer.deck)) 
-                            if cards[i].collidepoint(mouseX, mouseY):
-                                card = player.chooseCardTrick(deckThrow, i)
-                                if card == None:
-                                    pass
-                                else:
-                                    deckThrow.append((card, player))
-                                    chosing = False
-                                    print((card.value, card.couleur))
+                            i = mouseX // (self.width//len(player.deck))
+                            print(i)
+                            try:
+                                if cards[i].collidepoint(mouseX, mouseY):
+                                    card = player.chooseCardTrick(deckThrow, i)
+                                    if card == None:
+                                        print((player.deck[i].value, player.deck[i].couleur))
+                                        pass
+                                    else:
+                                        deckThrow.append((card, player))
+                                        chosing = False
+                                        print((card.value, card.couleur))
+                            except:
+                                pass
 
                 pygame.display.update()
 
