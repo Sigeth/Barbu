@@ -76,7 +76,7 @@ class Player():
                         assert self.deck[i].couleur==colorTrick
                         return self.throw(self.deck[i])
                     except:
-                        pass
+                        return None
             else:
                 return self.throw(self.deck[i])
                     

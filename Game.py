@@ -216,13 +216,17 @@ class Game():
 
         for j in range(len(self.players)):
 
+            print("oué yo")
+
             player = self.players[(index + j) % 4]
+
+            self.playerWaitingScreen(player, font)
 
             chosing = True
             while chosing:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 
-                self.screen, cards = firstPlayer.showCards(self.screen, self.bgColor, font, self.width, self.height)
+                self.screen, cards = player.showCards(self.screen, self.bgColor, font, self.width, self.height)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()
@@ -232,12 +236,16 @@ class Game():
                             i = mouseX // (self.width//len(firstPlayer.deck)) 
                             if cards[i].collidepoint(mouseX, mouseY):
                                 card = player.chooseCardTrick(deckThrow, i)
-                                deckThrow.append((card, player))
-                                chosing = False
-                                print((card.value, card.couleur))
-                                break
+                                if card == None:
+                                    pass
+                                else:
+                                    deckThrow.append((card, player))
+                                    chosing = False
+                                    print((card.value, card.couleur))
 
                 pygame.display.update()
+            
+            print("no u")
 
         for card in [tupl[0] for tupl in deckThrow]:
 
