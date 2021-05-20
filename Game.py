@@ -9,6 +9,10 @@ import pygame, sys
 
 class Game():
 
+    
+    ###################################
+    ### Initialisation de la partie ###
+    ###################################
 
     def __init__(self, nbPlayers=4, nbCards=52):
 
@@ -47,6 +51,10 @@ class Game():
 
         self.launchScreen()
     
+
+    #########################################################
+    ### Fonctions contenant les différentes phases du jeu ###
+    #########################################################
 
     def launchScreen(self):
         """
@@ -103,23 +111,7 @@ class Game():
             self.screen.blit(launchTxt, (self.width//2 - widthText//2, self.height//2 - heightText//2))
             pygame.display.update()
             currentDelay += 1
-        
     
-    def draw(self):
-        """
-        Distribue les cartes.
-        """
-
-        self.clearDecks()
-
-        self.paquet.battre()
-
-        for i in range(self.nbCards//self.nbPlayers):
-
-            for p in self.players:
-
-                p.take(self.paquet.tirer())
-
 
     def launch(self):
         """
@@ -144,214 +136,6 @@ class Game():
         #self.endScreen()
 
         self.gameState()
-    
-    def playerWaitingScreen(self, p, font):
-        ready = False
-
-        while not ready:
-            self.screen = p.waitingScreen(self.screen, self.bgColor, font, self.width, self.height)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: sys.exit()
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        ready = True
-            
-            pygame.display.update()
-
-    def endScreen(self):
-        """
-        Affiche les gagnants de la partie ainsi qu'un classement des joueurs (et un trophée)
-        """
-
-        self.currentState = "endScreen"
-        image = pygame.image.load('src/images/trophy.png')
-        rectangle = image.get_rect()
-        rectangle.center = (100,100)
-        rectangle.inflate_ip(-50,-50)
-        winnerFont = pygame.font.Font(self.fontSrc, self.fontSize)
-        font = pygame.font.Font(self.fontSrc, self.fontSize//2)
-        #widthText, heightText = font.size("LAUNCH")
-        winnertext = "Les gagnants sont : " + "\n".join([p.name for p in self.findWinners()])
-        textsurface = winnerFont.render(winnertext, False, (0, 0, 0))
-        sorted_players = self.players.sort(key=self.get_rank_key)
-        ranking_text = "Voici le classement : " + "\n".join([p.name for p in sorted_players])
-        
-        
-        while self.currentState == "endScreen":
-            #rectangle.show()
-            mouseX, mouseY = pygame.mouse.get_pos()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: sys.exit()
-            
-            self.screen.fill(self.bgColor)
-            self.screen.blit(image, rectangle)
-            self.screen.blit(textsurface,(0,0))
-            
-            pygame.display.update() 
-
-            
-
-
-    def clearDecks(self):
-        """
-        Vide les decks.
-        """
-        for p in self.players:
-
-            for card in p.deck:
-                self.paquet.remettre(card)
-            
-            p.deck = []
-
-    def trick(self, firstPlayer: Player, roundId: int) -> Player:
-        """
-        Effectue un tour de jeu.
-        """
-        deckThrow = []
-
-        index = self.players.index(firstPlayer)
-
-        font = pygame.font.Font(self.fontSrc, self.fontSize)
-
-        for j in range(len(self.players)):
-
-            player = self.players[(index + j) % 4]
-
-            self.playerWaitingScreen(player, font)
-
-            chosing = True
-            while chosing:
-                mouseX, mouseY = pygame.mouse.get_pos()
-                
-                self.screen, cards = player.showCards(self.screen, self.bgColor, font, self.width, self.height)
-
-                if len(deckThrow) != 0:
-                    for i in range(len(deckThrow)):
-                        card = deckThrow[i][0]
-
-                        cardRect = card.aff.get_rect()
-                        cardRect.move_ip(i*(self.width//len(deckThrow)) + 192//3, self.height//2 - 280//2)
-
-                        self.screen.blit(card.aff, cardRect)
-
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT: sys.exit()
-                
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        if mouseY >= self.height - 285:
-                            i = mouseX // (self.width//len(player.deck))
-                            print(i)
-                            try:
-                                if cards[i].collidepoint(mouseX, mouseY):
-                                    card = player.chooseCardTrick(deckThrow, i)
-                                    if card == None:
-                                        print((player.deck[i].value, player.deck[i].couleur))
-                                        pass
-                                    else:
-                                        deckThrow.append((card, player))
-                                        chosing = False
-                                        print((card.value, card.couleur))
-                            except:
-                                pass
-
-                pygame.display.update()
-
-        for card in [tupl[0] for tupl in deckThrow]:
-
-            self.paquet.remettre(card)
-            
-        return self.calculatePoints(deckThrow,roundId)
-
-
-    def calculatePoints(self, deckThrow: tuple, roundId: int) -> Player:
-        """
-        Définie le joueur qui gagne le trick et lui donne ces points.
-        """
-
-        trickColor= deckThrow[0][0].couleur
-
-        winnerCard= deckThrow[0]
-
-        for el in deckThrow:
-
-            if el[0].couleur==trickColor and el[0].point>winnerCard[0].point:
-
-                    winnerCard=el
-
-        winner=winnerCard
-
-        winner[1].addPoints(10)
-
-        for el in deckThrow:
-
-            card = el[0]
-
-            if (card.value == "roi" and card.couleur == "coeur") and (self.currentContract["name"] == "Roi barbu" or self.currentContract["name"] == "Salade"):
-
-                winner[1].addPoints(100)
-
-            elif (card.value == "dame") and (self.currentContract["name"] == "Dames" or self.currentContract["name"] == "Salade"):
-
-                winner[1].addPoints(25)
-
-            if (card.couleur == "coeur") and (self.currentContract["name"] == "Coeurs" or self.currentContract["name"] == "Salade"):
-
-                winner[1].addPoints(10)
-
-        points = sorted([p.points for p in self.players])
-
-        for p in self.players:
-
-            p.rank=points.index(p.points)+1
-
-        return winner[1]
-        
-
-    def checkVictory(self) -> bool:
-        """
-        Test si le contrat actuel est terminé ou non.
-        """
-        victory = False
-
-        for player in self.players:
-
-            for card in player.deck:
-
-                if self.currentContract["name"] == "Roi barbu" and (card.value == "roi" and card.couleur == "coeur"):
-
-                    victory = True
-
-                elif self.currentContract["name"] == "Dames" and card.value == "dame":
-
-                    victory = True
-
-                elif self.currentContract["name"] == "Coeurs" and card.couleur == "coeur":
-
-                    victory = True
-                    
-                elif self.currentContract["name"] == "Salade" and ((card.value == "dame") or (card.couleur == "coeur")):
-                    
-                    victory = True
-
-        return victory
-        
-    def round(self):
-        """
-        Lance les tricks et les test.
-        """
-        roundId = 0
-
-        firstPlayer=self.playerToPick
-
-        while roundId <= self.trickNb and self.checkVictory():
-
-            roundId+=1
-
-            firstPlayer = self.trick(firstPlayer, roundId)
-
-            print(([p.points for p in self.players]))
-            print(([p.rank for p in self.players]))
     
     def gameState(self):
         """
@@ -405,6 +189,236 @@ class Game():
                 self.playerToPick=self.players[self.players.index(self.playerToPick)+1]
 
         self.endScreen()
+    
+    def round(self):
+        """
+        Lance les tricks et les test.
+        """
+        roundId = 0
+
+        firstPlayer=self.playerToPick
+
+        while roundId <= self.trickNb and self.checkVictory():
+
+            roundId+=1
+
+            firstPlayer = self.trick(firstPlayer, roundId)
+
+            print(([p.points for p in self.players]))
+            print(([p.rank for p in self.players]))
+    
+    def trick(self, firstPlayer: Player, roundId: int) -> Player:
+        """
+        Effectue un tour de jeu.
+        """
+        deckThrow = []
+
+        index = self.players.index(firstPlayer)
+
+        font = pygame.font.Font(self.fontSrc, self.fontSize)
+
+        for j in range(len(self.players)):
+
+            player = self.players[(index + j) % 4]
+
+            self.playerWaitingScreen(player, font)
+
+            chosing = True
+            while chosing:
+                mouseX, mouseY = pygame.mouse.get_pos()
+                
+                self.screen, cards = player.showCards(self.screen, self.bgColor, font, self.width, self.height)
+
+                self.showDeckThrow(deckThrow, font)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: sys.exit()
+                
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if mouseY >= self.height - 285:
+                            i = mouseX // (self.width//len(player.deck))
+                            print(i)
+                            try:
+                                if cards[i].collidepoint(mouseX, mouseY):
+                                    card = player.chooseCardTrick(deckThrow, i)
+                                    if card == None:
+                                        print((player.deck[i].value, player.deck[i].couleur))
+                                        pass
+                                    else:
+                                        deckThrow.append((card, player))
+                                        chosing = False
+                                        print((card.value, card.couleur))
+                            except:
+                                pass
+
+                pygame.display.update()
+
+        for card in [tupl[0] for tupl in deckThrow]:
+
+            self.paquet.remettre(card)
+            
+        return self.calculatePoints(deckThrow,roundId)
+    
+    def endScreen(self):
+        """
+        Affiche les gagnants de la partie ainsi qu'un classement des joueurs (et un trophée)
+        """
+
+        self.currentState = "endScreen"
+        image = pygame.image.load('src/images/trophy.png')
+        rectangle = image.get_rect()
+        rectangle.center = (100,100)
+        rectangle.inflate_ip(-50,-50)
+        winnerFont = pygame.font.Font(self.fontSrc, self.fontSize)
+        font = pygame.font.Font(self.fontSrc, self.fontSize//2)
+        #widthText, heightText = font.size("LAUNCH")
+        winnertext = "Les gagnants sont : " + "\n".join([p.name for p in self.findWinners()])
+        textsurface = winnerFont.render(winnertext, False, (0, 0, 0))
+        sorted_players = self.players.sort(key=self.get_rank_key)
+        ranking_text = "Voici le classement : " + "\n".join([p.name for p in sorted_players])
+        
+        
+        while self.currentState == "endScreen":
+            #rectangle.show()
+            mouseX, mouseY = pygame.mouse.get_pos()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+            
+            self.screen.fill(self.bgColor)
+            self.screen.blit(image, rectangle)
+            self.screen.blit(textsurface,(0,0))
+            
+            pygame.display.update()
+    
+
+    ################################################
+    ### Fonctions assurant la lisibilité du code ###
+    ################################################
+    
+    def draw(self):
+        """
+        Distribue les cartes.
+        """
+
+        self.clearDecks()
+
+        self.paquet.battre()
+
+        for i in range(self.nbCards//self.nbPlayers):
+
+            for p in self.players:
+
+                p.take(self.paquet.tirer())
+    
+    def clearDecks(self):
+        """
+        Vide les decks.
+        """
+        for p in self.players:
+
+            for card in p.deck:
+                self.paquet.remettre(card)
+            
+            p.deck = []
+    
+    def playerWaitingScreen(self, p: Player, font: pygame.font.Font):
+        ready = False
+
+        while not ready:
+            self.screen = p.waitingScreen(self.screen, self.bgColor, font, self.width, self.height)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        ready = True
+            
+            pygame.display.update()
+    
+
+    def showDeckThrow(self, deckThrow: tuple, font: pygame.font.Font):
+        if len(deckThrow) != 0:
+            for i in range(len(deckThrow)):
+                card = deckThrow[i][0]
+
+                cardRect = card.aff.get_rect()
+                cardRect.move_ip(i*(self.width//(len(deckThrow)+1)) + 192//3, self.height//2 - 285)
+
+                self.screen.blit(card.aff, cardRect)
+    
+
+    def checkVictory(self) -> bool:
+        """
+        Test si le contrat actuel est terminé ou non.
+        """
+        victory = False
+
+        for player in self.players:
+
+            for card in player.deck:
+
+                if self.currentContract["name"] == "Roi barbu" and (card.value == "roi" and card.couleur == "coeur"):
+
+                    victory = True
+
+                elif self.currentContract["name"] == "Dames" and card.value == "dame":
+
+                    victory = True
+
+                elif self.currentContract["name"] == "Coeurs" and card.couleur == "coeur":
+
+                    victory = True
+                    
+                elif self.currentContract["name"] == "Salade" and ((card.value == "dame") or (card.couleur == "coeur")):
+                    
+                    victory = True
+
+        return victory
+
+
+    def calculatePoints(self, deckThrow: tuple, roundId: int) -> Player:
+        """
+        Définie le joueur qui gagne le trick et lui donne ces points.
+        """
+
+        trickColor= deckThrow[0][0].couleur
+
+        winnerCard= deckThrow[0]
+
+        for el in deckThrow:
+
+            if el[0].couleur==trickColor and el[0].point>winnerCard[0].point:
+
+                    winnerCard=el
+
+        winner=winnerCard
+
+        winner[1].addPoints(10)
+
+        for el in deckThrow:
+
+            card = el[0]
+
+            if (card.value == "roi" and card.couleur == "coeur") and (self.currentContract["name"] == "Roi barbu" or self.currentContract["name"] == "Salade"):
+
+                winner[1].addPoints(100)
+
+            elif (card.value == "dame") and (self.currentContract["name"] == "Dames" or self.currentContract["name"] == "Salade"):
+
+                winner[1].addPoints(25)
+
+            if (card.couleur == "coeur") and (self.currentContract["name"] == "Coeurs" or self.currentContract["name"] == "Salade"):
+
+                winner[1].addPoints(10)
+
+        points = sorted([p.points for p in self.players])
+
+        for p in self.players:
+
+            p.rank=points.index(p.points)+1
+
+        return winner[1]
+    
         
     def findWinners(self):
 
