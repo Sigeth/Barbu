@@ -58,7 +58,7 @@ class Game():
 
     def launchScreen(self):
         """
-        Affiche l'écran d'acceuil et le bouton LAUNCH au lancement.
+        Affiche l'écran d'accueil et le bouton LAUNCH au lancement.
         """
         self.paquet.battre()
 
@@ -343,6 +343,7 @@ class Game():
 
                 cardRect = card.aff.get_rect()
                 cardRect.move_ip(i*(self.width//(len(deckThrow)+1)) + 192//3, self.height//2 - 285)
+                cardRect.inflate_ip(-50, -50)
 
                 self.screen.blit(card.aff, cardRect)
     
