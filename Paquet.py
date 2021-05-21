@@ -14,10 +14,14 @@ class Paquet():
         couleur = ('pique', 'trèfle', 'carreau', 'coeur')
         valeur = ('as', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'valet', 'dame', 'roi')
         self.cartes = []
+
         for coul in range(4):
+
             for val in range(13):
+
                 nouvelle_carte = Card(valeur[val], couleur[coul],val)   # la valeur commence à  0
                 self.cartes.append(nouvelle_carte)
+
         self.battre()
 
 
@@ -35,11 +39,15 @@ class Paquet():
         """
 
         t = len(self.cartes)
+
         if t>0:
+
             carte = self.cartes[0]   # choisir la première carte du jeu
             del(self.cartes[0])      # et la supprimer du jeu
             return carte
+
         else:
+        
             return None
     
 

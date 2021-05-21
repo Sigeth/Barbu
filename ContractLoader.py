@@ -7,18 +7,28 @@ class ContractLoader:
     """
 
     def __init__(self):
+
         self.subdir = './contracts'
+
         self.contractDic = []
 
 
     def loadContracts(self) -> list:
-        #for every contract file
+        """
+        Retourn la liste des contrats en python.
+        """
+
         for filename in os.listdir(self.subdir):
-             if filename.endswith(".json"):    
+
+            if filename.endswith(".json"):    
+            
                 self.contractDic.append(self.loadContract(os.path.join(self.subdir,filename)))
+
         return self.contractDic
 
 
     def loadContract(self,filename) -> dict:
+
         f = open(filename, "r")
+
         return json.loads(f.read())
