@@ -2,10 +2,15 @@ from Card import Card
 from random import shuffle
 
 class Paquet():
-    """Paquet de cartes"""
+    """
+    Paquet de cartes.
+    """
     
     def __init__(self):
-        """Construction de la liste des 52 cartes"""
+        """
+        Construction de la liste des 52 cartes.
+        """
+
         couleur = ('pique', 'trèfle', 'carreau', 'coeur')
         valeur = ('as', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'valet', 'dame', 'roi')
         self.cartes = []
@@ -15,12 +20,20 @@ class Paquet():
                 self.cartes.append(nouvelle_carte)
         self.battre()
 
+
     def battre(self):
-        "Mélanger les cartes"
+        """
+        Mélanger les cartes.
+        """
+
         shuffle(self.cartes)
         
-    def tirer(self):
-        "Tirer la première carte de la pile"
+
+    def tirer(self) -> Card:
+        """
+        Tirer la première carte de la pile.
+        """
+
         t = len(self.cartes)
         if t>0:
             carte = self.cartes[0]   # choisir la première carte du jeu
@@ -29,5 +42,10 @@ class Paquet():
         else:
             return None
     
-    def remettre(self, card):
+
+    def remettre(self, card: Card):
+        """
+        Remettre la carte dans le paquet.
+        """
+
         self.cartes.append(card)

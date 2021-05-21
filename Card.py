@@ -2,7 +2,9 @@ from random import shuffle
 import pygame
 
 class Card():
-    "Définition d'une carte"
+    """
+    Définition d'une carte.
+    """
     
     def __init__(self,val='as',coul='carreau',n=0): # le constructeur
         self.value = val
