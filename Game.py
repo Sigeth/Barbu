@@ -1,4 +1,5 @@
 from pygame.constants import RESIZABLE
+
 from Player import Player
 
 from Paquet import Paquet
@@ -8,11 +9,11 @@ from random import choice, randint
 import pygame, sys
 
 class Game():
-
     
     ###################################
     ### Initialisation de la partie ###
     ###################################
+    
 
     def __init__(self, nbPlayers=4, nbCards=52):
 
@@ -47,11 +48,12 @@ class Game():
         self.screen = pygame.display.set_mode(self.size, RESIZABLE)
 
         self.fontSrc = "src/KGRedHands.ttf"
+        
         self.fontSize = 96
 
         self.launchScreen()
     
-
+    
     #########################################################
     ### Fonctions contenant les différentes phases du jeu ###
     #########################################################
@@ -60,50 +62,72 @@ class Game():
         """
         Affiche l'écran d'accueil et le bouton LAUNCH au lancement.
         """
+        
         self.paquet.battre()
 
         font = pygame.font.Font(self.fontSrc, self.fontSize)
+        
         widthText, heightText = font.size("LAUNCH")
 
         delayms = 1000
         currentDelay = 1000
+        
         cardsToDisplay = [None for i in range(6)]
+
         while self.currentState == "WaitingScreen":
+
             mouseX, mouseY = pygame.mouse.get_pos()
 
             for event in pygame.event.get():
+            
                 if event.type == pygame.QUIT: sys.exit()
             
             self.screen.fill(self.bgColor)
 
             if currentDelay >= delayms:
+
                 for i in range(6):
+
                     card = choice(self.paquet.cartes)
                     cardRect = card.aff.get_rect()
                     widthCard, heightCard = (0, 0)
+
                     if i == 0 or i == 3:
+
                         widthCard = 50
+                        
                     elif i == 1 or i == 4:
+
                         widthCard = self.width//2 - 192//2
+
                     else:
+                    
                         widthCard = self.width - 50 - 192
                     
                     if i < 3:
+
                         heightCard = 0
+
                     else:
+
                         heightCard = self.height - 290
                     
                     cardRect.move_ip(widthCard, heightCard)
-                    cardsToDisplay[i] = (card.aff, cardRect)
+                    cardsToDisplay[i] = (card.aff, cardRect)                    
                 currentDelay = 0
 
             for card, cardRect in cardsToDisplay:
+
                 self.screen.blit(card, cardRect)
 
             colorText = (0, 0, 0)
+
             if (self.width//2 - widthText//2 < mouseX and mouseX < self.width//2 + widthText//2) and (self.height//2 - heightText//2 < mouseY and mouseY < self.height//2 + heightText//2):
+
                 colorText = (randint(0, 255), randint(0, 255), randint(0, 255))
+
                 if pygame.mouse.get_pressed(3)[0]:
+
                     self.currentState = "launch?"
                     self.launch()
 
@@ -117,6 +141,7 @@ class Game():
         """
         Affiche le choix des noms.
         """
+
         self.screen.fill(self.bgColor)
 
         pygame.display.update()
@@ -137,10 +162,12 @@ class Game():
 
         self.gameState()
     
+
     def gameState(self):
         """
         Lance les rounds, affiche les contrats et calcule le vainqueur.
         """
+        
         for i in range(len(self.players[0].contractList)//2*len(self.players)):
 
             self.draw()
@@ -154,6 +181,7 @@ class Game():
             chosing = True
 
             while chosing:
+
                 mouseX, mouseY = pygame.mouse.get_pos()
                 
                 self.screen, cards = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
@@ -165,12 +193,17 @@ class Game():
                 self.screen, contracts = self.playerToPick.showContracts(self.screen, self.bgColor, font, self.width, self.height)
 
                 for event in pygame.event.get():
+
                     if event.type == pygame.QUIT: sys.exit()
 
                     if event.type == pygame.MOUSEBUTTONDOWN:
+
                         if mouseY >= self.height//2 - 280//2 and mouseY <= self.height//2 + 280//2:
+
                             i = (mouseX - 192//2) // (self.width//len(self.playerToPick.contractList)) 
+
                             if contracts[i].collidepoint(mouseX, mouseY):
+
                                 self.currentContract = self.playerToPick.chooseContract(i)
                                 print(self.currentContract["name"])
                                 chosing = False
@@ -190,10 +223,12 @@ class Game():
 
         self.endScreen()
     
+
     def round(self):
         """
         Lance les tricks et les test.
         """
+
         roundId = 0
 
         firstPlayer=self.playerToPick
@@ -202,15 +237,16 @@ class Game():
 
             roundId+=1
 
-            firstPlayer = self.trick(firstPlayer, roundId)
+            firstPlayer, deckThrow = self.trick(firstPlayer, roundId)
 
-            print(([p.points for p in self.players]))
-            print(([p.rank for p in self.players]))
+            self.endTrickScreen(deckThrow)
     
+
     def trick(self, firstPlayer: Player, roundId: int) -> Player:
         """
         Effectue un tour de jeu.
         """
+
         deckThrow = []
 
         index = self.players.index(firstPlayer)
@@ -224,31 +260,45 @@ class Game():
             self.playerWaitingScreen(player, font)
 
             chosing = True
+
             while chosing:
+
                 mouseX, mouseY = pygame.mouse.get_pos()
                 
                 self.screen, cards = player.showCards(self.screen, self.bgColor, font, self.width, self.height)
 
-                self.showDeckThrow(deckThrow, font)
+                self.showDeckThrow(deckThrow)
 
                 for event in pygame.event.get():
+
                     if event.type == pygame.QUIT: sys.exit()
                 
                     if event.type == pygame.MOUSEBUTTONDOWN:
+
                         if mouseY >= self.height - 285:
+
                             i = mouseX // (self.width//len(player.deck))
                             print(i)
+
                             try:
+
                                 if cards[i].collidepoint(mouseX, mouseY):
+
                                     card = player.chooseCardTrick(deckThrow, i)
+
                                     if card == None:
+
                                         print((player.deck[i].value, player.deck[i].couleur))
                                         pass
+
                                     else:
+
                                         deckThrow.append((card, player))
                                         chosing = False
                                         print((card.value, card.couleur))
+
                             except:
+                            
                                 pass
 
                 pygame.display.update()
@@ -257,13 +307,14 @@ class Game():
 
             self.paquet.remettre(card)
             
-        return self.calculatePoints(deckThrow,roundId)
+        return self.calculatePoints(deckThrow,roundId), deckThrow
     
+
     def endScreen(self):
         """
-        Affiche les gagnants de la partie ainsi qu'un classement des joueurs (et un trophée)
+        Affiche les gagnants de la partie ainsi qu'un classement des joueurs (et un trophée).
         """
-
+        
         self.currentState = "endScreen"
         image = pygame.image.load('src/images/trophy.png')
         rectangle = image.get_rect()
@@ -274,19 +325,24 @@ class Game():
         #widthText, heightText = font.size("LAUNCH")
         winnertext = "Les gagnants sont : " + "\n".join([p.name for p in self.findWinners()])
         textsurface = winnerFont.render(winnertext, False, (0, 0, 0))
-        sorted_players = self.players.sort(key=self.get_rank_key)
+        sorted_players = sorted(p.rank for p in self.players)
         ranking_text = "Voici le classement : " + "\n".join([p.name for p in sorted_players])
+        textsurface2d = winnerFont.render(ranking_text, False, (0, 0, 0))
         
         
         while self.currentState == "endScreen":
+
             #rectangle.show()
             mouseX, mouseY = pygame.mouse.get_pos()
+
             for event in pygame.event.get():
+
                 if event.type == pygame.QUIT: sys.exit()
             
             self.screen.fill(self.bgColor)
             self.screen.blit(image, rectangle)
             self.screen.blit(textsurface,(0,0))
+            self.screen.blit(textsurface2,(20,20))
             
             pygame.display.update()
     
@@ -295,6 +351,7 @@ class Game():
     ### Fonctions assurant la lisibilité du code ###
     ################################################
     
+
     def draw(self):
         """
         Distribue les cartes.
@@ -310,48 +367,77 @@ class Game():
 
                 p.take(self.paquet.tirer())
     
+
     def clearDecks(self):
         """
         Vide les decks.
         """
+
         for p in self.players:
 
             for card in p.deck:
+
                 self.paquet.remettre(card)
             
             p.deck = []
     
+
     def playerWaitingScreen(self, p: Player, font: pygame.font.Font):
+        """
+        Permet le passage a l'écran d'attente.
+        """
+
         ready = False
 
         while not ready:
+
             self.screen = p.waitingScreen(self.screen, self.bgColor, font, self.width, self.height)
+
             for event in pygame.event.get():
+
                 if event.type == pygame.QUIT: sys.exit()
 
                 if event.type == pygame.KEYDOWN:
+
                     if event.key == pygame.K_RETURN:
+
                         ready = True
             
             pygame.display.update()
     
 
-    def showDeckThrow(self, deckThrow: tuple, font: pygame.font.Font):
+    def showDeckThrow(self, deckThrow: tuple):
+        """
+        Affiche Le DeckThrow.
+        """
+        
         if len(deckThrow) != 0:
+
             for i in range(len(deckThrow)):
+
                 card = deckThrow[i][0]
+                p = deckThrow[i][1]
 
                 cardRect = card.aff.get_rect()
-                cardRect.move_ip(i*(self.width//(len(deckThrow)+1)) + 192//3, self.height//2 - 285)
+                widthCard, heightCard = i*(self.width//(len(deckThrow)+1)) + 192//3, self.height//2 - 285
+                cardRect.move_ip(widthCard, heightCard)
                 cardRect.inflate_ip(-50, -50)
 
                 self.screen.blit(card.aff, cardRect)
+
+                font = pygame.font.Font(self.fontSrc, 25)
+
+                pNameTxt = font.render(p.name, True, (0,0,0))
+                widthTxt, heightTxt = font.size(p.name)
+
+                self.screen.blit(pNameTxt, (widthCard + 25, heightCard - heightTxt//2))
     
 
     def checkVictory(self) -> bool:
         """
         Test si le contrat actuel est terminé ou non.
         """
+        
         victory = False
 
         for player in self.players:
@@ -379,7 +465,7 @@ class Game():
 
     def calculatePoints(self, deckThrow: tuple, roundId: int) -> Player:
         """
-        Définie le joueur qui gagne le trick et lui donne ces points.
+        Définie le joueur qui gagne le trick et lui donne ses points.
         """
 
         trickColor= deckThrow[0][0].couleur
@@ -420,8 +506,37 @@ class Game():
 
         return winner[1]
     
+
+    def endTrickScreen(self, deckThrow: tuple):
+        """
+        Montre le deckThrow a la fin d'un trickc.
+        """
+
+        ok = False
+
+        while not ok:
+
+            self.screen.fill(self.bgColor)
+
+            self.showDeckThrow(deckThrow)
+
+            for event in pygame.event.get():
+
+                if event.type == pygame.QUIT: sys.exit()
+
+                if event.type == pygame.KEYDOWN:
+
+                    if event.key == pygame.K_RETURN:
+
+                        ok = True
+            
+            pygame.display.update()
+    
         
-    def findWinners(self):
+    def findWinners(self) -> list:
+        """
+        Calcule le vainqueur.
+        """
 
         i=self.players[0].points
 
@@ -441,5 +556,7 @@ class Game():
 
         return win
 
-    def get_rank_key(p):
-        return p['rank']
+
+    def get_rank_key(p) -> int:
+    
+        return p["rank"]
