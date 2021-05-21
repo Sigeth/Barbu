@@ -44,7 +44,7 @@ class Player():
                     
                     elif event.key == pygame.K_RETURN:
                     
-                        if len(current_string) == 0 or "".join(current_string) in [p.name for p in players]:
+                        if len(current_string) == 0 or "".join(current_string) in [p.name for p in players] or len(current_string) > 12:
 
                             pass
 
