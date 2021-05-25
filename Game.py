@@ -318,22 +318,64 @@ class Game():
         self.currentState = "endScreen"
         image = pygame.image.load('src/images/trophy.png')
         rectangle = image.get_rect()
-        rectangle.center = (self.width,)
-        rectangle.inflate_ip(-150,-150)
+        rectangle.center = (500, self.height//2 - 512//2)
+        rectangle.inflate_ip(-300,-300)
+
+        delayms = 500
+        currentDelay = 500
+        
+        cardsToDisplay = [None for i in range(4)]
         
         while self.currentState == "endScreen":
 
             #rectangle.show()
             mouseX, mouseY = pygame.mouse.get_pos()
 
+            
+            
+            self.screen.fill(self.bgColor)
+
+            if currentDelay >= delayms:
+
+                for i in range(4):
+
+                    card = choice(self.paquet.cartes)
+                    cardRect = card.aff.get_rect()
+                    widthCard, heightCard = (0, 0)
+
+                    if i == 0 or i == 2:
+
+                        widthCard = 50
+
+                    else:
+                    
+                        widthCard = self.width - 50 - 192
+                    
+                    if i < 2:
+
+                        heightCard = 0
+
+                    else:
+
+                        heightCard = self.height - 290
+                    
+                    cardRect.move_ip(widthCard, heightCard)
+                    cardsToDisplay[i] = (card.aff, cardRect)                    
+                currentDelay = 0
+
+            for card, cardRect in cardsToDisplay:
+
+                self.screen.blit(card, cardRect)
+
             for event in pygame.event.get():
 
                 if event.type == pygame.QUIT: sys.exit()
-            
-            self.screen.fill(self.bgColor)
-           
-            self.showCurrentRankings()
+
             self.screen.blit(image, rectangle)
+            self.showCurrentRankings()
+
+            currentDelay += 1
+           
             
             pygame.display.update()
         
@@ -371,6 +413,7 @@ class Game():
                 self.paquet.remettre(card)
             
             p.deck = []
+            
     
 
     def playerWaitingScreen(self, p: Player, font: pygame.font.Font):
