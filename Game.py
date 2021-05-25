@@ -158,8 +158,6 @@ class Game():
 
         self.currentState = "GameState"
 
-        self.endScreen()
-
         self.gameState()
     
 
