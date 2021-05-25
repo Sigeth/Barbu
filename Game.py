@@ -158,7 +158,7 @@ class Game():
 
         self.currentState = "GameState"
 
-        self.endScreen()
+        #self.endScreen()
 
         self.gameState()
     
@@ -184,7 +184,7 @@ class Game():
 
                 mouseX, mouseY = pygame.mouse.get_pos()
                 
-                self.screen, cards = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height)
+                self.screen, cards = self.playerToPick.showCards(self.screen, self.bgColor, font, self.width, self.height, self.currentContract)
 
                 transparentRect = pygame.Surface(self.size, pygame.SRCALPHA)
                 transparentRect.fill((0,0,0,176))
@@ -265,7 +265,7 @@ class Game():
 
                 mouseX, mouseY = pygame.mouse.get_pos()
                 
-                self.screen, cards = player.showCards(self.screen, self.bgColor, font, self.width, self.height)
+                self.screen, cards = player.showCards(self.screen, self.bgColor, font, self.width, self.height, self.currentContract)
 
                 self.showDeckThrow(deckThrow)
 
@@ -320,15 +320,6 @@ class Game():
         rectangle = image.get_rect()
         rectangle.center = (100,100)
         rectangle.inflate_ip(-50,-50)
-        winnerFont = pygame.font.Font(self.fontSrc, self.fontSize)
-        font = pygame.font.Font(self.fontSrc, self.fontSize//2)
-        #widthText, heightText = font.size("LAUNCH")
-        winnertext = "Les gagnants sont : " + "\n".join([p.name for p in self.findWinners()])
-        textsurface = winnerFont.render(winnertext, False, (0, 0, 0))
-        sorted_players = sorted(p.rank for p in self.players)
-        ranking_text = "Voici le classement : " + "\n".join([p.name for p in sorted_players])
-        textsurface2d = winnerFont.render(ranking_text, False, (0, 0, 0))
-        
         
         while self.currentState == "endScreen":
 
@@ -340,12 +331,31 @@ class Game():
                 if event.type == pygame.QUIT: sys.exit()
             
             self.screen.fill(self.bgColor)
+            self.showWinners()
+            self.showCurrentRankings()
             self.screen.blit(image, rectangle)
-            self.screen.blit(textsurface,(0,0))
-            self.screen.blit(textsurface2,(20,20))
             
             pygame.display.update()
     
+    def showWinners(self):
+        """
+        Affiche la liste des gagnants.  
+        """
+
+        font = pygame.font.Font(self.fontSrc, self.fontSize - self.fontSize//6)
+        winners = self.findWinners()
+        headerRankTxt = font.render("Here is the list of the winners :", True, (0,0,0))
+        widthTxt, heightTxt = font.size("Here is the list of the winners :")
+        self.screen.blit(headerRankTxt, (self.width//2 - widthTxt//2, (self.height//2 - heightTxt*2) + self.height//3))
+
+        for i in range(len(winners)):
+
+            p = winners[i]
+            playerTxt = font.render(str(p.rank) + ": " + p.name, True, (0,0,0))
+            widthTxt, heightTxt = font.size(str(p.rank) + ": " + p.name)
+
+            self.screen.blit(playerTxt, (self.width//2 - widthTxt//2, (self.height//2 + heightTxt*i) + self.height//3))
+        
 
     ################################################
     ### Fonctions assurant la lisibilité du code ###
@@ -506,10 +516,29 @@ class Game():
 
         return winner[1]
     
+    def showCurrentRankings(self):
+        """
+        Affiche le rank actuel des joueurs.
+        """
+        
+        font = pygame.font.Font(self.fontSrc, self.fontSize - self.fontSize//6)
+        sorted_players = sorted([p for p in self.players], key=lambda x: x.rank)
+        headerRankTxt = font.render("Here are the rankings:", True, (0,0,0))
+        widthTxt, heightTxt = font.size("Here are the rankings:")
+        self.screen.blit(headerRankTxt, (self.width//2 - widthTxt//2, (self.height//2 - heightTxt*2) + self.height//6))
+
+        for i in range(len(self.players)):
+            sufixes = {1: "st", 2: "nd", 3: "rd", 4: "th"}
+            p = sorted_players[i]
+            playerTxt = font.render(str(p.rank) + sufixes[p.rank] + ": " + p.name + " (" + str(p.points) + "p)", True, (0,0,0))
+            widthTxt, heightTxt = font.size(str(p.rank) + ": " + p.name + " (" + str(p.points) + "p)")
+
+            self.screen.blit(playerTxt, (self.width//2 - widthTxt//2, (self.height//2 + heightTxt*i) + self.height//6))
+    
 
     def endTrickScreen(self, deckThrow: tuple):
         """
-        Montre le deckThrow a la fin d'un trickc.
+        Montre le deckThrow a la fin d'un trick.
         """
 
         ok = False
@@ -519,6 +548,8 @@ class Game():
             self.screen.fill(self.bgColor)
 
             self.showDeckThrow(deckThrow)
+
+            self.showCurrentRankings()
 
             for event in pygame.event.get():
 
@@ -535,7 +566,7 @@ class Game():
         
     def findWinners(self) -> list:
         """
-        Calcule le vainqueur.
+        Calcule le/les vainqueur(s).
         """
 
         i=self.players[0].points

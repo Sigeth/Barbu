@@ -160,15 +160,15 @@ class Player():
         return screen
        
     
-    def showCards(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int) -> tuple:
+    def showCards(self, screen: pygame.Surface, bgColor: tuple, font: pygame.font.Font, width: int, height: int, currentContract: dict) -> tuple:
         """
         Affiche le nom du jouer et son deck.
         """
 
         screen.fill(bgColor)
 
-        nameTxt = font.render(self.name + "'s turn", True, (0,0,0))
-        widthText, heightText = font.size(self.name + "'s turn")
+        nameTxt = font.render(self.name + "'s turn (" + currentContract["name"] + ")" if currentContract != None else self.name + "'s turn", True, (0,0,0))
+        widthText, heightText = font.size(self.name + "'s turn (" + currentContract["name"] + ")" if currentContract != None else self.name + "'s turn")
 
         screen.blit(nameTxt, (width//2 - widthText//2, 10))
 
