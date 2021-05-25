@@ -13,7 +13,7 @@ class Player():
 
         self.points = 0
 
-        self.rank = 0
+        self.rank = 1
 
         self.contractList = ContractLoader().loadContracts()
     
