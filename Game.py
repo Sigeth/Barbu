@@ -158,7 +158,7 @@ class Game():
 
         self.currentState = "GameState"
 
-        #self.endScreen()
+        self.endScreen()
 
         self.gameState()
     
@@ -560,3 +560,12 @@ class Game():
     def get_rank_key(p) -> int:
     
         return p["rank"]
+
+
+
+
+##################################################
+### Début de la partie en lançant le programme ###
+##################################################
+
+Game()
