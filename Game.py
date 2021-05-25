@@ -45,7 +45,7 @@ class Game():
         icon = pygame.image.load("src/icon.png")
         pygame.display.set_icon(icon)
 
-        self.screen = pygame.display.set_mode(self.size, RESIZABLE)
+        self.screen = pygame.display.set_mode(self.size)
 
         self.fontSrc = "src/KGRedHands.ttf"
         
@@ -158,7 +158,7 @@ class Game():
 
         self.currentState = "GameState"
 
-        #self.endScreen()
+        self.endScreen()
 
         self.gameState()
     
@@ -318,8 +318,8 @@ class Game():
         self.currentState = "endScreen"
         image = pygame.image.load('src/images/trophy.png')
         rectangle = image.get_rect()
-        rectangle.center = (100,100)
-        rectangle.inflate_ip(-50,-50)
+        rectangle.center = (self.width,)
+        rectangle.inflate_ip(-150,-150)
         
         while self.currentState == "endScreen":
 
@@ -331,30 +331,11 @@ class Game():
                 if event.type == pygame.QUIT: sys.exit()
             
             self.screen.fill(self.bgColor)
-            self.showWinners()
+           
             self.showCurrentRankings()
             self.screen.blit(image, rectangle)
             
             pygame.display.update()
-    
-    def showWinners(self):
-        """
-        Affiche la liste des gagnants.  
-        """
-
-        font = pygame.font.Font(self.fontSrc, self.fontSize - self.fontSize//6)
-        winners = self.findWinners()
-        headerRankTxt = font.render("Here is the list of the winners :", True, (0,0,0))
-        widthTxt, heightTxt = font.size("Here is the list of the winners :")
-        self.screen.blit(headerRankTxt, (self.width//2 - widthTxt//2, (self.height//2 - heightTxt*2) + self.height//3))
-
-        for i in range(len(winners)):
-
-            p = winners[i]
-            playerTxt = font.render(str(p.rank) + ": " + p.name, True, (0,0,0))
-            widthTxt, heightTxt = font.size(str(p.rank) + ": " + p.name)
-
-            self.screen.blit(playerTxt, (self.width//2 - widthTxt//2, (self.height//2 + heightTxt*i) + self.height//3))
         
 
     ################################################
