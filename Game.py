@@ -51,6 +51,10 @@ class Game():
         
         self.fontSize = 96
 
+        self.sound = pygame.mixer.Sound("src/musics/Ruffles and Rust - Happy, Quirky.ogg")
+
+        self.sound.play(loops = -1)
+
         self.launchScreen()
     
     
